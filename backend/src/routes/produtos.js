@@ -78,4 +78,47 @@ router.get('/:codigo', async (req, res) => {
   }
 })
 
+// GET /api/produtos/:codigo/imagens — busca todas as imagens do produto
+router.get('/:codigo/imagens', async (req, res) => {
+  const fs = require('fs')
+  const path = require('path')
+  const pastaImagens = 'D:\\Programaçao\\Criaçao de site\\img\\produtos\\3'
+  const codigo = req.params.codigo
+
+  try {
+    const arquivos = fs.readdirSync(pastaImagens)
+    const regex = new RegExp(`-${codigo}[d-]`, 'i')
+    const imagens = arquivos
+      .filter(f => regex.test(f))
+      .map(f => `http://localhost:3001/imagens/${f}`)
+
+    res.json(imagens)
+  } catch (err) {
+    res.status(500).json({ erro: err.message })
+  }
+})
+
+// GET /api/produtos/:codigo/variacoes — busca produtos com nome similar
+router.get('/:codigo/variacoes', async (req, res) => {
+  try {
+    const produtoRes = await pool.query(
+      'SELECT nome FROM produtos WHERE codigo = $1',
+      [req.params.codigo]
+    )
+    if (produtoRes.rows.length === 0) return res.json([])
+
+    const nomeCompleto = produtoRes.rows[0].nome
+
+    const result = await pool.query(
+      `SELECT codigo, nome, imagem FROM produtos 
+       WHERE nome = $1 AND codigo != $2
+       ORDER BY codigo ASC LIMIT 8`,
+      [nomeCompleto, req.params.codigo]
+    )
+    res.json(result.rows)
+  } catch (err) {
+    res.status(500).json({ erro: err.message })
+  }
+})
+
 module.exports = router
