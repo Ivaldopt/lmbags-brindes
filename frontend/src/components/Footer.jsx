@@ -13,7 +13,7 @@ function Footer() {
           </div>
           <div className="text-sm space-y-2 text-gray-400">
             <p>📍 Salvador, Ba</p>
-            <p>📞 (11) 0000-0000</p>
+            <p>📞 (71) 9912-4780</p>
             <p>✉️ contato@lmbags.com.br</p>
           </div>
         </div>
