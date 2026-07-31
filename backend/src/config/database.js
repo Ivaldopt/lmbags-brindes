@@ -1,11 +1,8 @@
 const { Pool } = require('pg')
 
 const pool = new Pool({
-  host: '127.0.0.1',
-  port: 5432,
-  user: 'admin',
-  password: 'admin',
-  database: 'lmbags',
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
 })
 
 pool.connect()

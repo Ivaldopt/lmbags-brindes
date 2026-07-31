@@ -7,12 +7,12 @@ function Footer() {
         {/* Logo e contato */}
         <div>
           <div className="mb-4">
-            <span className="text-2xl font-bold text-white">LM</span>
-            <span className="text-2xl font-light text-gray-300">BAGS</span>
-            <p className="text-xs text-gray-400 uppercase tracking-widest">Brindes</p>
+            <Link to="/" className="flex items-center">
+          <img src="/Logo LM BAGS E BRINDES Branco.png" alt="LM Bags e Brindes" className="h-30 w-auto object-contain" />
+        </Link>
           </div>
           <div className="text-sm space-y-2 text-gray-400">
-            <p>📍 São Paulo, SP</p>
+            <p>📍 Salvador, Ba</p>
             <p>📞 (11) 0000-0000</p>
             <p>✉️ contato@lmbags.com.br</p>
           </div>

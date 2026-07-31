@@ -13,10 +13,9 @@ require('./config/database')
 // Servir imagens locais — extrai o nome do arquivo da URL original
 app.get('/imagens/:filename', (req, res) => {
   const filename = req.params.filename
-  const filepath = path.join('D:\\Programaçao\\Criaçao de site\\img\\produtos\\3', filename)
-  res.sendFile(filepath, err => {
-    if (err) res.status(404).json({ erro: 'Imagem não encontrada' })
-  })
+  const publicId = filename.replace(/\.(jpg|jpeg|png)$/i, '')
+  const url = `https://res.cloudinary.com/zfkjqogg/image/upload/lmbags/${publicId}`
+  res.redirect(url)
 })
 
 // Rotas da API
