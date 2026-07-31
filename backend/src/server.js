@@ -5,10 +5,7 @@ const path = require('path')
 const app = express()
 const PORT = 3001
 
-app.use(cors({
-  origin: ['https://lmbags-brindes-three.vercel.app', 'http://localhost:5173'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-}))
+app.use(cors())
 app.use(express.json())
 
 require('./config/database')
@@ -20,7 +17,6 @@ app.get('/imagens/:filename', (req, res) => {
   const url = `https://res.cloudinary.com/zfkjqogg/image/upload/lmbags/${publicId}`
   res.redirect(url)
 })
-
 // Rotas da API
 app.use('/api/produtos', require('./routes/produtos'))
 
