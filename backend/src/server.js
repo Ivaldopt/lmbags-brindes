@@ -5,7 +5,10 @@ const path = require('path')
 const app = express()
 const PORT = 3001
 
-app.use(cors())
+app.use(cors({
+  origin: ['https://lmbags-brindes-three.vercel.app', 'http://localhost:5173'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+}))
 app.use(express.json())
 
 require('./config/database')
