@@ -80,18 +80,21 @@ router.get('/:codigo', async (req, res) => {
 
 // GET /api/produtos/:codigo/imagens — busca todas as imagens do produto
 router.get('/:codigo/imagens', async (req, res) => {
-  const fs = require('fs')
-  const path = require('path')
-  const pastaImagens = 'D:\\Programaçao\\Criaçao de site\\img\\produtos\\3'
-  const codigo = req.params.codigo
-
   try {
-    const arquivos = fs.readdirSync(pastaImagens)
-    const regex = new RegExp(`-${codigo}[d-]`, 'i')
-    const imagens = arquivos
-      .filter(f => regex.test(f))
-      .map(f => `http://localhost:3001/imagens/${f}`)
+    const cloudinary = require('cloudinary').v2
+    cloudinary.config({
+      cloud_name: 'zfkjqogg',
+      api_key: '761551516374698',
+      api_secret: 'jd49sTqhB_EdfJTQoS9RmHmBvGA'
+    })
 
+    const codigo = req.params.codigo
+    const result = await cloudinary.search
+      .expression(`folder:lmbags AND public_id:*-${codigo}-* OR public_id:*-${codigo}d*`)
+      .max_results(10)
+      .execute()
+
+    const imagens = result.resources.map(r => r.secure_url)
     res.json(imagens)
   } catch (err) {
     res.status(500).json({ erro: err.message })
