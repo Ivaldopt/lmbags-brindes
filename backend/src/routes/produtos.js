@@ -90,7 +90,7 @@ router.get('/:codigo/imagens', async (req, res) => {
     const regex = new RegExp(`-${codigo}[d-]`, 'i')
     const imagens = arquivos
       .filter(f => regex.test(f))
-      .map(f => `${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/imagens/${f}`)
+      .map(f => `http://localhost:3001/imagens/${f}`)
 
     res.json(imagens)
   } catch (err) {
