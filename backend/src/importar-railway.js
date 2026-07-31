@@ -3,7 +3,7 @@ const fs = require('fs')
 const { parse } = require('csv-parse/sync')
 
 const pool = new Pool({
-  connectionString: 'postgresql://postgres:zUvAfZuAoXiHRtUtKRjWZCqdVKqvpoML@altaria.proxy.rlwy.net:15387/railway',
+  connectionString: 'postgresql://postgres:FGYNXUwoXXCFzWTvzgRZgEzmhgewZguk@caboose.proxy.rlwy.net:57882/railway',
   ssl: { rejectUnauthorized: false }
 })
 
