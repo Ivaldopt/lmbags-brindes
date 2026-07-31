@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "API do projeto LMBags Brindes",
   "main": "src/server.js",
+  "type": "commonjs",
   "engines": {
     "node": "20.x"
   },
