@@ -53,10 +53,6 @@ function Header() {
           </Link>
           <Link to="/catalogo" className="px-4 py-3 hover:bg-sky-900 transition-colors">
             PRODUTOS
-          </Link>
-          <Link to="/catalogo?novidades=true" className="px-4 py-3 hover:bg-sky-900 transition-colors">
-            LANÇAMENTOS
-          </Link>
           <Link to="/quem-somos" className="px-4 py-3 hover:bg-sky-900 transition-colors">
             QUEM SOMOS
           </Link>
