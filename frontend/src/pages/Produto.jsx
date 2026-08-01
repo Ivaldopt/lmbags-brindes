@@ -201,7 +201,6 @@ function Produto() {
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {relacionados.map((p) => {
-                const src = `${API}/imagens/${p.imagem ? p.imagem.split("/").pop() : ""}`;
                 const nomeArquivo = p.imagem
                   ? p.imagem
                       .split("/")
