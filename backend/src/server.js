@@ -19,6 +19,8 @@ app.get('/imagens/:filename', (req, res) => {
 })
 // Rotas da API
 app.use('/api/produtos', require('./routes/produtos'))
+app.use('/api/auth', require('./routes/auth'))
+app.use('/api/admin', require('./routes/admin'))
 
 // Rota de teste
 app.get('/health', (req, res) => {

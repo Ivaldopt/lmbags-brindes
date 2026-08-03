@@ -81,26 +81,40 @@ router.get('/:codigo', async (req, res) => {
 // GET /api/produtos/:codigo/imagens — busca todas as imagens do produto
 router.get('/:codigo/imagens', async (req, res) => {
   try {
-    const cloudinary = require('cloudinary').v2
-    cloudinary.config({
-      cloud_name: 'zfkjqogg',
-      api_key: '761551516374698',
-      api_secret: 'jd49sTqhB_EdfJTQoS9RmHmBvGA'
-    })
+    // Busca produto pelo codigo
+    const produtoResult = await pool.query(
+      'SELECT id, imagem FROM produtos WHERE codigo = $1',
+      [req.params.codigo]
+    )
+    if (produtoResult.rows.length === 0) return res.json([])
 
-    const codigo = req.params.codigo
-    const result = await cloudinary.search
-      .expression(`folder:lmbags AND public_id:*-${codigo}-* OR public_id:*-${codigo}d*`)
-      .max_results(10)
-      .execute()
+    const produto = produtoResult.rows[0]
 
-    const imagens = result.resources.map(r => r.secure_url)
-    res.json(imagens)
+    // Busca imagens extras na tabela produto_imagens
+    const imagensResult = await pool.query(
+      'SELECT url FROM produto_imagens WHERE produto_id = $1 ORDER BY ordem ASC',
+      [produto.id]
+    )
+
+    if (imagensResult.rows.length > 0) {
+      // Retorna imagens extras + imagem principal
+      const urls = imagensResult.rows.map(r => r.url)
+      if (produto.imagem) {
+        const nomeArquivo = produto.imagem.split('/').pop().replace(/\.[^/.]+$/, '')
+        const urlPrincipal = `https://res.cloudinary.com/zfkjqogg/image/upload/lmbags/${nomeArquivo}`
+        if (!urls.includes(urlPrincipal)) urls.unshift(urlPrincipal)
+      }
+      return res.json(urls)
+    }
+
+    // Se não tem imagens extras, retorna só a principal
+    if (!produto.imagem) return res.json([])
+    const nomeArquivo = produto.imagem.split('/').pop().replace(/\.[^/.]+$/, '')
+    res.json([`https://res.cloudinary.com/zfkjqogg/image/upload/lmbags/${nomeArquivo}`])
   } catch (err) {
     res.status(500).json({ erro: err.message })
   }
 })
-
 // GET /api/produtos/:codigo/variacoes — busca produtos com nome similar
 router.get('/:codigo/variacoes', async (req, res) => {
   try {
