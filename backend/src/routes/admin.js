@@ -5,13 +5,26 @@ const autenticar = require('../middlewares/auth')
 const cloudinary = require('cloudinary').v2
 const multer = require('multer')
 
-// Rota pública — registrar visita
 router.post('/visitas', async (req, res) => {
   const { tipo, referencia } = req.body
+  const ip = req.headers['x-forwarded-for']?.split(',')[0] || req.socket.remoteAddress
+
   try {
+    // Verifica se esse IP já visitou hoje
+    const jaVisitou = await pool.query(
+      `SELECT id FROM visitas 
+       WHERE ip = $1 AND tipo = $2 AND referencia = $3
+       AND created_at >= NOW() - INTERVAL '24 hours'`,
+      [ip, tipo, referencia || null]
+    )
+
+    if (jaVisitou.rows.length > 0) {
+      return res.json({ sucesso: true, duplicado: true })
+    }
+
     await pool.query(
-      'INSERT INTO visitas (tipo, referencia) VALUES ($1, $2)',
-      [tipo, referencia || null]
+      'INSERT INTO visitas (tipo, referencia, ip) VALUES ($1, $2, $3)',
+      [tipo, referencia || null, ip]
     )
     res.json({ sucesso: true })
   } catch (err) {
