@@ -41,6 +41,13 @@ function Produto() {
       .finally(() => setLoading(false));
   }, [codigo]);
 
+  // Registrar visita ao produto
+  useEffect(() => {
+    if (codigo) {
+      axios.post(`${API}/api/admin/visitas`, { tipo: 'produto', referencia: codigo }).catch(() => {})
+    }
+  }, [codigo])
+
   if (loading)
     return (
       <div className="flex items-center justify-center h-96">
