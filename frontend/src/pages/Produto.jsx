@@ -42,9 +42,13 @@ function Produto() {
   }, [codigo]);
 
   // Registrar visita ao produto
-  useEffect(() => {
+ useEffect(() => {
     if (codigo) {
-      axios.post(`${API}/api/admin/visitas`, { tipo: 'produto', referencia: codigo }).catch(() => {})
+      const chave = `visitou_produto_${codigo}`
+      if (!sessionStorage.getItem(chave)) {
+        axios.post(`${API}/api/admin/visitas`, { tipo: 'produto', referencia: codigo }).catch(() => {})
+        sessionStorage.setItem(chave, '1')
+      }
     }
   }, [codigo])
 
