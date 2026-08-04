@@ -10,18 +10,32 @@ router.post('/visitas', async (req, res) => {
   const ip = req.headers['x-forwarded-for']?.split(',')[0] || req.socket.remoteAddress
 
   try {
-    // Verifica se esse IP já visitou hoje
+    // Verifica se esse IP já visitou o site hoje (qualquer página)
     const jaVisitou = await pool.query(
       `SELECT id FROM visitas 
-       WHERE ip = $1 AND tipo = $2 AND referencia = $3
-       AND created_at >= NOW() - INTERVAL '24 hours'`,
-      [ip, tipo, referencia || null]
+       WHERE ip = $1
+       AND created_at >= CURRENT_DATE`,
+      [ip]
     )
 
     if (jaVisitou.rows.length > 0) {
+      // IP já visitou hoje — só registra produto se ainda não foi registrado
+      if (tipo === 'produto' && referencia) {
+        const jaVistoProduto = await pool.query(
+          `SELECT id FROM visitas WHERE ip = $1 AND tipo = 'produto' AND referencia = $2 AND created_at >= CURRENT_DATE`,
+          [ip, referencia]
+        )
+        if (jaVistoProduto.rows.length === 0) {
+          await pool.query(
+            'INSERT INTO visitas (tipo, referencia, ip) VALUES ($1, $2, $3)',
+            [tipo, referencia, ip]
+          )
+        }
+      }
       return res.json({ sucesso: true, duplicado: true })
     }
 
+    // Primeira visita do dia — registra
     await pool.query(
       'INSERT INTO visitas (tipo, referencia, ip) VALUES ($1, $2, $3)',
       [tipo, referencia || null, ip]
@@ -74,32 +88,30 @@ router.get('/stats', async (req, res) => {
 })
 
 // GET /api/admin/produtos — lista todos
-router.get('/produtos', async (req, res) => {
+
+router.get('/stats', async (req, res) => {
   try {
-    const { busca, pagina = 1, limite = 20 } = req.query
-    const offset = (pagina - 1) * limite
-    const params = []
-    let where = ''
-
-    if (busca) {
-      params.push(`%${busca}%`)
-      where = `WHERE nome ILIKE $1 OR categoria ILIKE $1`
-    }
-
-    const total = await pool.query(`SELECT COUNT(*) FROM produtos ${where}`, params)
-    params.push(limite)
-    params.push(offset)
-
-    const result = await pool.query(
-      `SELECT * FROM produtos ${where} ORDER BY nome ASC LIMIT $${params.length - 1} OFFSET $${params.length}`,
-      params
-    )
+    const [totalProdutos, totalCategorias, visitasHoje, visitasMes, topProdutos] = await Promise.all([
+      pool.query('SELECT COUNT(*) FROM produtos'),
+      pool.query('SELECT COUNT(DISTINCT categoria) FROM produtos'),
+      pool.query("SELECT COUNT(DISTINCT ip) FROM visitas WHERE created_at >= CURRENT_DATE"),
+      pool.query("SELECT COUNT(DISTINCT ip) FROM visitas WHERE created_at >= NOW() - INTERVAL '30 days'"),
+      pool.query(`
+        SELECT referencia, COUNT(*) as total 
+        FROM visitas 
+        WHERE tipo = 'produto' AND referencia IS NOT NULL
+        GROUP BY referencia 
+        ORDER BY total DESC 
+        LIMIT 5
+      `),
+    ])
 
     res.json({
-      produtos: result.rows,
-      total: parseInt(total.rows[0].count),
-      pagina: parseInt(pagina),
-      totalPaginas: Math.ceil(total.rows[0].count / limite)
+      totalProdutos: parseInt(totalProdutos.rows[0].count),
+      totalCategorias: parseInt(totalCategorias.rows[0].count),
+      visitasHoje: parseInt(visitasHoje.rows[0].count),
+      visitasMes: parseInt(visitasMes.rows[0].count),
+      topProdutos: topProdutos.rows,
     })
   } catch (err) {
     res.status(500).json({ erro: err.message })
