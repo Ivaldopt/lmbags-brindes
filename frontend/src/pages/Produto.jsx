@@ -41,7 +41,7 @@ function Produto() {
       .finally(() => setLoading(false));
   }, [codigo]);
 
-  // Registrar visita ao produto
+  // Registrar visita ao produto por dia
  useEffect(() => {
     if (codigo) {
       const chave = `visitou_produto_${codigo}`
