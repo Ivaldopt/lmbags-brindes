@@ -38,8 +38,8 @@ function App() {
           <Route path="/admin/produtos/editar/:id" element={<RotaProtegida><EditarProduto /></RotaProtegida>} />
         </Routes>
       </main>
-      {!isAdmin && <Footer />}
       {!isAdmin && <WhatsappWidget />}
+      {!isAdmin && <Footer />}
     </div>
   )
 }
