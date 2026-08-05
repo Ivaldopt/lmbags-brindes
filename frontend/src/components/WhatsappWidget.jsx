@@ -70,7 +70,13 @@ export default function WhatsappWidget() {
               <p className="text-sm">Como podemos ajudar você hoje?</p>
 
               <div className="flex justify-end mt-3">
-                <span className="text-[11px] text-blue-500">agora ✓✓</span>
+                <span className="text-[11px] text-blue-500">
+                  {new Date().toLocaleTimeString("pt-BR", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}{" "}
+                  ✓✓
+                </span>
               </div>
             </div>
 
