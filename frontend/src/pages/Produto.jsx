@@ -84,7 +84,7 @@ function Produto() {
   // CONFIGURAÇÃO DO WHATSAPP
   // ================================
 
-  const TELEFONE_WHATSAPP = "557199124780"; // troque pelo seu número
+  const TELEFONE_WHATSAPP = "557199124780"; 
 
   const mensagemWhatsApp = `
   Olá!

@@ -11,6 +11,7 @@ import Dashboard from './pages/admin/Dashboard'
 import Produtos from './pages/admin/Produtos'
 import EditarProduto from './pages/admin/EditarProduto'
 import NovoProduto from './pages/admin/NovoProduto'
+import WhatsappWidget from './components/WhatsappWidget'
 
 function RotaProtegida({ children }) {
   const { autenticado } = useAuth()
@@ -38,6 +39,7 @@ function App() {
         </Routes>
       </main>
       {!isAdmin && <Footer />}
+      {!isAdmin && <WhatsappWidget />}
     </div>
   )
 }
