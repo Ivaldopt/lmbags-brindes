@@ -42,15 +42,20 @@ function Produto() {
   }, [codigo]);
 
   // Registrar visita ao produto por dia
- useEffect(() => {
+  useEffect(() => {
     if (codigo) {
-      const chave = `visitou_produto_${codigo}`
+      const chave = `visitou_produto_${codigo}`;
       if (!sessionStorage.getItem(chave)) {
-        axios.post(`${API}/api/admin/visitas`, { tipo: 'produto', referencia: codigo }).catch(() => {})
-        sessionStorage.setItem(chave, '1')
+        axios
+          .post(`${API}/api/admin/visitas`, {
+            tipo: "produto",
+            referencia: codigo,
+          })
+          .catch(() => {});
+        sessionStorage.setItem(chave, "1");
       }
     }
-  }, [codigo])
+  }, [codigo]);
 
   if (loading)
     return (
@@ -74,6 +79,31 @@ function Produto() {
     imagens.length > 0
       ? imagens[imgAtiva]
       : `${API}/imagens/${produto.imagem ? produto.imagem.split("/").pop() : ""}`;
+
+  // ================================
+  // CONFIGURAÇÃO DO WHATSAPP
+  // ================================
+
+  const TELEFONE_WHATSAPP = "557199124780"; // troque pelo seu número
+
+  const mensagemWhatsApp = `
+  Olá!
+
+  Gostaria de solicitar um orçamento para o seguinte produto:
+
+  📦 Produto: ${produto.nome}
+  🔢 Código: ${String(produto.codigo).padStart(5, "0")}
+  📂 Categoria: ${produto.categoria}
+
+  🔗 Link do produto:
+  ${window.location.href}
+
+  Aguardo seu retorno.
+  `;
+
+  const whatsappUrl = `https://wa.me/${TELEFONE_WHATSAPP}?text=${encodeURIComponent(
+    mensagemWhatsApp,
+  )}`;
 
   return (
     <div className="bg-white min-h-screen">
@@ -198,9 +228,22 @@ function Produto() {
               </Link>
             </div>
 
-            <button className="bg-sky-500 hover:bg-sky-600 text-white font-semibold px-10 py-3 rounded transition-colors text-sm">
-              📩 Solicitar cotação
-            </button>
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold px-10 py-3 rounded-lg transition-all duration-300 shadow hover:shadow-lg"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 32 32"
+                className="w-5 h-5 fill-current"
+              >
+                <path d="M19.11 17.33c-.29-.14-1.7-.84-1.96-.93-.26-.09-.45-.14-.64.14-.19.29-.74.93-.91 1.12-.17.19-.34.22-.63.08-.29-.14-1.21-.45-2.31-1.44-.86-.76-1.44-1.7-1.61-1.99-.17-.29-.02-.45.13-.6.13-.13.29-.34.43-.5.14-.17.19-.29.29-.48.1-.19.05-.36-.02-.5-.07-.14-.64-1.55-.88-2.12-.23-.56-.47-.48-.64-.49-.17-.01-.36-.01-.55-.01-.19 0-.5.07-.76.36-.26.29-1 1-.99 2.44 0 1.44 1.04 2.83 1.18 3.03.14.19 2.05 3.13 5.06 4.39.72.31 1.28.49 1.72.63.72.23 1.38.2 1.9.12.58-.09 1.7-.69 1.94-1.35.24-.67.24-1.24.17-1.35-.07-.12-.26-.19-.55-.33z" />
+                <path d="M16.01 3C8.83 3 3 8.82 3 16c0 2.29.6 4.53 1.74 6.5L3 29l6.7-1.72A12.96 12.96 0 0016.01 29C23.18 29 29 23.18 29 16S23.18 3 16.01 3zm0 23.66c-2.03 0-4.02-.55-5.75-1.6l-.41-.24-3.98 1.02 1.06-3.88-.27-.4A10.6 10.6 0 015.34 16c0-5.88 4.79-10.67 10.67-10.67S26.68 10.12 26.68 16 21.89 26.66 16.01 26.66z" />
+              </svg>
+              Solicitar cotação via WhatsApp
+            </a>
           </div>
         </div>
 

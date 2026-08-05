@@ -19,7 +19,7 @@ function QuemSomos() {
           <div>
             <h2 className="text-2xl font-semibold text-gray-800 mb-4">Nossa história</h2>
             <p className="text-gray-500 leading-relaxed mb-4">
-              Somos uma distribuidora de brindes corporativos com foco em atender empresas
+              Somos uma distribuidora de brindes corporativos com foco em atender pessoas fisicas.
               especializadas na revenda de brindes personalizados. Oferecemos um catálogo
               completo com mais de 2.300 produtos para personalização.
             </p>
@@ -58,8 +58,8 @@ function QuemSomos() {
           <p className="text-gray-300 mb-6">Fale conosco para solicitar um orçamento ou tirar dúvidas</p>
           <div className="flex flex-col md:flex-row items-center justify-center gap-4 text-sm mb-6">
             <span>📍 Salvador, BA</span>
-            <span>📞 (71) 0000-0000</span>
-            <span>✉️ contato@lmbags.com.br</span>
+            <span>📞 (71) 9912-4780</span>
+            <span>✉️ vendas@lmbagsebrindes.com.br</span>
           </div>
           <Link to="/catalogo"
             className="bg-sky-500 hover:bg-sky-400 text-white font-semibold px-8 py-3 rounded-full transition-colors inline-block">

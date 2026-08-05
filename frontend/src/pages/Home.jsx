@@ -115,7 +115,7 @@ function Home() {
             <h1 className="text-4xl font-bold mb-4 leading-tight">
               Brindes corporativos
               <br />
-              <span className="text-yellow-300">para sua empresa</span>
+              <span className="text-yellow-300">para sua você!</span>
             </h1>
             <p className="text-sky-100 mb-6 text-lg">
               Mais de 2.300 produtos para personalização
