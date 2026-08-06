@@ -43,7 +43,7 @@ function Footer() {
         <div>
           <h4 className="text-white font-medium mb-4 text-sm uppercase tracking-wider">Sobre</h4>
           <p className="text-sm text-gray-400 leading-relaxed">
-            Distribuidora de brindes corporativos e personalizados para empresas especializadas na revenda.
+            Distribuidora de brindes corporativos e personalizados para Você.
           </p>
         </div>
       </div>
