@@ -117,6 +117,14 @@ function Dashboard() {
                   <p className="text-xs text-gray-400">Visualizar o site público</p>
                 </div>
               </Link>
+              <Link to="/admin/avaliacoes"
+                className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors border border-gray-100">
+                <span className="text-2xl">⭐</span>
+                <div>
+                  <p className="font-medium text-gray-700 text-sm">Avaliações</p>
+                  <p className="text-xs text-gray-400">Gerenciar avaliações do Google</p>
+                </div>
+              </Link>
             </div>
           </div>
         </div>

@@ -14,7 +14,7 @@ function Footer() {
           <div className="text-sm space-y-2 text-gray-400">
             <p>📍 Salvador, Ba</p>
             <p>📞 (71) 9912-4780</p>
-            <p>✉️ contato@lmbags.com.br</p>
+            <p>✉️ vendas@lmbagsebrindes.com</p>
           </div>
         </div>
 

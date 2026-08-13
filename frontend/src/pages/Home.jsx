@@ -189,6 +189,17 @@ function Home() {
         </div>
       </div>
 
+      {/* Avaliações Google */}
+      <div className="max-w-7xl mx-auto px-6 py-12">
+        <h2 className="text-lg font-semibold text-gray-600 uppercase tracking-wider mb-8 text-center">
+          O que nossos clientes dizem
+        </h2>
+        <div
+          className="elfsight-app-799167cb-beb7-4af2-b0ec-c24c96898107"
+          data-elfsight-app-lazy>
+        </div>
+      </div>
+
       {/* CTA */}
       <div className="max-w-7xl mx-auto px-6 py-12">
         <div className="bg-gradient-to-r from-gray-800 to-gray-700 rounded-2xl p-8 flex flex-col md:flex-row items-center justify-between gap-6">
@@ -206,8 +217,12 @@ function Home() {
           >
             Entre em contato
           </Link>
+          
         </div>
-          <GoogleReviews />
+      
+      {/* CTA */}
+      <div className="max-w-7xl mx-auto px-6 py-12"></div>
+      
       </div>
     </div>
   );

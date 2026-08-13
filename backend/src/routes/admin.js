@@ -215,4 +215,55 @@ router.delete('/imagens/:id', async (req, res) => {
   }
 })
 
+// GET /api/admin/avaliacoes — listar todas
+router.get('/avaliacoes', async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT * FROM avaliacoes ORDER BY created_at DESC'
+    )
+    res.json(result.rows)
+  } catch (err) {
+    res.status(500).json({ erro: err.message })
+  }
+})
+
+// POST /api/admin/avaliacoes — criar avaliação
+router.post('/avaliacoes', async (req, res) => {
+  const { nome, nota, comentario, foto_url, data_avaliacao } = req.body
+  try {
+    const result = await pool.query(
+      `INSERT INTO avaliacoes (nome, nota, comentario, foto_url, data_avaliacao)
+       VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+      [nome, nota, comentario, foto_url || null, data_avaliacao || null]
+    )
+    res.json(result.rows[0])
+  } catch (err) {
+    res.status(500).json({ erro: err.message })
+  }
+})
+
+// PUT /api/admin/avaliacoes/:id — editar avaliação
+router.put('/avaliacoes/:id', async (req, res) => {
+  const { nome, nota, comentario, foto_url, data_avaliacao, ativo } = req.body
+  try {
+    await pool.query(
+      `UPDATE avaliacoes SET nome=$1, nota=$2, comentario=$3, foto_url=$4, data_avaliacao=$5, ativo=$6 WHERE id=$7`,
+      [nome, nota, comentario, foto_url, data_avaliacao, ativo, req.params.id]
+    )
+    res.json({ sucesso: true })
+  } catch (err) {
+    res.status(500).json({ erro: err.message })
+  }
+})
+
+// DELETE /api/admin/avaliacoes/:id — deletar avaliação
+router.delete('/avaliacoes/:id', async (req, res) => {
+  try {
+    await pool.query('DELETE FROM avaliacoes WHERE id = $1', [req.params.id])
+    res.json({ sucesso: true })
+  } catch (err) {
+    res.status(500).json({ erro: err.message })
+  }
+})
+
 module.exports = router

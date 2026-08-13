@@ -30,3 +30,16 @@ app.get('/health', (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Servidor rodando na porta ${PORT}`)
 })
+
+// Rota pública de avaliações
+app.get('/api/avaliacoes', async (req, res) => {
+  const pool = require('./config/database')
+  try {
+    const result = await pool.query(
+      'SELECT * FROM avaliacoes WHERE ativo = true ORDER BY created_at DESC'
+    )
+    res.json(result.rows)
+  } catch (err) {
+    res.status(500).json({ erro: err.message })
+  }
+})

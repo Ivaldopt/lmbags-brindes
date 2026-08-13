@@ -12,6 +12,7 @@ import Produtos from './pages/admin/Produtos'
 import EditarProduto from './pages/admin/EditarProduto'
 import NovoProduto from './pages/admin/NovoProduto'
 import WhatsappWidget from './components/WhatsappWidget'
+import Avaliacoes from './pages/admin/Avaliacoes'
 
 function RotaProtegida({ children }) {
   const { autenticado } = useAuth()
@@ -36,6 +37,7 @@ function App() {
           <Route path="/admin/produtos" element={<RotaProtegida><Produtos /></RotaProtegida>} />
           <Route path="/admin/produtos/novo" element={<RotaProtegida><NovoProduto /></RotaProtegida>} />
           <Route path="/admin/produtos/editar/:id" element={<RotaProtegida><EditarProduto /></RotaProtegida>} />
+          <Route path="/admin/avaliacoes" element={<RotaProtegida><Avaliacoes /></RotaProtegida>} />
         </Routes>
       </main>
       {!isAdmin && <WhatsappWidget />}

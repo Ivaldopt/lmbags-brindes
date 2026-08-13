@@ -138,4 +138,16 @@ router.get('/:codigo/variacoes', async (req, res) => {
   }
 })
 
+// GET /api/avaliacoes — rota pública para o site
+router.get('/avaliacoes', async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT * FROM avaliacoes WHERE ativo = true ORDER BY created_at DESC'
+    )
+    res.json(result.rows)
+  } catch (err) {
+    res.status(500).json({ erro: err.message })
+  }
+})
+
 module.exports = router
