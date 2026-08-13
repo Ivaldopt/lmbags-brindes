@@ -43,3 +43,24 @@ app.get('/api/avaliacoes', async (req, res) => {
     res.status(500).json({ erro: err.message })
   }
 })
+
+// Rota pública — capturar email e liberar download do catálogo
+app.post('/api/catalogo/download', async (req, res) => {
+  const { email, nome } = req.body
+  const pool = require('./config/database')
+
+  if (!email) return res.status(400).json({ erro: 'Email obrigatório' })
+
+  try {
+    await pool.query(
+      'INSERT INTO leads (email, nome) VALUES ($1, $2) ON CONFLICT (email) DO NOTHING',
+      [email, nome || null]
+    )
+    res.json({
+      sucesso: true,
+      url: 'https://drive.google.com/file/d/1vvA5Z98M3HDL2NqUbAJHd6GzWfU2-hWE/view?usp=sharing'
+    })
+  } catch (err) {
+    res.status(500).json({ erro: err.message })
+  }
+})

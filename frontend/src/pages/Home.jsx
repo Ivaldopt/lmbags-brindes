@@ -65,6 +65,65 @@ function CardCategoria({ cat }) {
   );
 }
 
+function CatalogForm() {
+  const [nome, setNome] = useState('')
+  const [email, setEmail] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [baixado, setBaixado] = useState(false)
+  const [erro, setErro] = useState('')
+
+  async function handleDownload(e) {
+    e.preventDefault()
+    setLoading(true)
+    setErro('')
+    try {
+      const res = await axios.post(`${API}/api/catalogo/download`, { email, nome })
+      if (res.data.sucesso) {
+        setBaixado(true)
+        window.open(res.data.url, '_blank')
+      }
+    } catch (err) {
+      setErro('Erro ao processar. Tente novamente.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (baixado) {
+    return (
+      <div className="bg-green-500 text-white rounded-xl px-8 py-4 text-center">
+        <p className="text-lg font-bold">✅ Download iniciado!</p>
+        <p className="text-sm mt-1 text-green-100">Obrigado! Em breve enviaremos novidades.</p>
+      </div>
+    )
+  }
+
+  return (
+    <form onSubmit={handleDownload} className="flex flex-col sm:flex-row gap-3 w-full max-w-lg">
+      <input
+        type="text"
+        placeholder="Seu nome"
+        value={nome}
+        onChange={e => setNome(e.target.value)}
+        className="flex-1 px-4 py-3 rounded-lg text-gray-800 placeholder-gray-400 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-sky-400"
+      />
+      <input
+        type="email"
+        placeholder="Seu email *"
+        value={email}
+        onChange={e => setEmail(e.target.value)}
+        required
+        className="flex-1 px-4 py-3 rounded-lg text-gray-800 placeholder-gray-400 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-sky-400"
+      />
+      <button type="submit" disabled={loading}
+        className="bg-sky-500 hover:bg-sky-400 text-white font-semibold px-6 py-3 rounded-lg text-sm transition-colors whitespace-nowrap disabled:opacity-50">
+        {loading ? 'Aguarde...' : '📥 Baixar grátis'}
+      </button>
+      {erro && <p className="text-red-400 text-xs mt-1">{erro}</p>}
+    </form>
+  )
+}
+
 function Home() {
   const [categorias, setCategorias] = useState([]);
   const [lancamentos, setLancamentos] = useState([]);
@@ -189,6 +248,17 @@ function Home() {
         </div>
       </div>
 
+      {/* Download Catálogo */}
+      <div className="bg-gradient-to-r from-gray-800 to-gray-700 py-12">
+        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-8">
+          <div className="text-white">
+            <h2 className="text-2xl font-bold mb-2">📥 Baixe nosso catálogo 2026-2027</h2>
+            <p className="text-gray-300">Mais de 2.300 produtos para personalização. Grátis!</p>
+          </div>
+          <CatalogForm />
+        </div>
+      </div>
+
       {/* Avaliações Google */}
       <div className="max-w-7xl mx-auto px-6 py-12">
         <h2 className="text-lg font-semibold text-gray-600 uppercase tracking-wider mb-8 text-center">
@@ -200,30 +270,6 @@ function Home() {
         </div>
       </div>
 
-      {/* CTA */}
-      <div className="max-w-7xl mx-auto px-6 py-12">
-        <div className="bg-gradient-to-r from-gray-800 to-gray-700 rounded-2xl p-8 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="text-white">
-            <h3 className="text-2xl font-bold mb-2">
-              Cadastre-se e receba novidades
-            </h3>
-            <p className="text-gray-300">
-              Catálogo online com mais de 2.300 produtos
-            </p>
-          </div>
-          <Link
-            to="/quem-somos"
-            className="bg-sky-500 hover:bg-sky-400 text-white font-semibold px-8 py-3 rounded-full transition-colors whitespace-nowrap"
-          >
-            Entre em contato
-          </Link>
-          
-        </div>
-      
-      {/* CTA */}
-      <div className="max-w-7xl mx-auto px-6 py-12"></div>
-      
-      </div>
     </div>
   );
 }
