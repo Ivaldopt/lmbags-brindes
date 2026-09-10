@@ -1,3 +1,4 @@
+﻿import ScrollToTop from './components/ScrollToTop'
 import CookieConsent from './components/CookieConsent'
 import LegalPage from './pages/LegalPage'
 import OutubroRosa from './pages/OutubroRosa'
@@ -29,6 +30,7 @@ function App() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
+      <ScrollToTop />
       <Seo />
       <a href="#conteudo" className="sr-only focus:not-sr-only">Pular para o conteúdo</a>
       {!isAdmin && <Header />}

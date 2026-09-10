@@ -1,11 +1,21 @@
-import { Link } from 'react-router-dom'
+﻿import { Link } from 'react-router-dom'
+import './CollectionCards.css'
 
 const collections = [
-  { name: 'Ecobags e sacolas', image: '/banners/ecobags.webp', search: 'Sacola', text: 'Sua marca em movimento' },
-  { name: 'Garrafas e squeezes', image: '/banners/garrafas.webp', search: 'Garrafa', text: 'Para todos os momentos' },
-  { name: 'Mochilas e bolsas', image: '/banners/mochilas.webp', search: 'Mochila', text: 'Ideias que vão mais longe' },
-  { name: 'Canetas', image: '/banners/canetas.webp', search: 'Caneta', text: 'Presença em cada detalhe' },
+  { name: 'Garrafas e squeezes', image: 'garrafas', search: 'Garrafa', shape: 'tall', text: 'Uma pausa com a sua marca' },
+  { name: 'Canetas', image: 'canetas', search: 'Caneta', shape: 'pen', text: 'Ideias que deixam sua marca' },
+  { name: 'Ecobags e sacolas', image: 'sacolas', search: 'Sacola', shape: 'eco', text: 'Para acompanhar todos os dias' },
+  { name: 'Mochilas e bolsas', image: 'mochilas', search: 'Mochila', shape: 'wide', text: 'Leve sua marca mais longe' },
+  { name: 'Bolsas térmicas', image: 'bolsas-termicas', search: 'Bolsa Térmica', shape: 'bottom', text: 'Boas ideias para levar' },
+  { name: 'Cadernetas', image: 'cadernetas', search: 'Caderneta', shape: 'bottom notebook', text: 'O começo de uma nova ideia' },
+  { name: 'Copos térmicos', image: 'copos', search: 'Copo', shape: 'bottom cup', text: 'Presentes para o dia a dia' },
 ]
 export default function CollectionCards() {
-  return <section className="max-w-7xl mx-auto px-5 py-12" aria-labelledby="collections-title"><p className="text-xs tracking-widest uppercase text-sky-700 font-semibold mb-2">Encontre o próximo presente</p><h2 id="collections-title" className="text-3xl font-semibold tracking-tight text-slate-800 mb-7">Uma ideia para cada ocasião.</h2><div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">{collections.map(item => <Link key={item.search} to={`/catalogo?busca=${encodeURIComponent(item.search)}`} className="group bg-white rounded-xl overflow-hidden border border-slate-200 hover:shadow-lg transition-shadow"><div className="h-44 md:h-52 overflow-hidden bg-[#eeeee9]"><img src={item.image} alt={item.name} loading="lazy" width="500" height="350" className={`w-full h-full ${item.search === 'Sacola' ? 'object-contain' : 'object-cover'} group-hover:scale-105 transition-transform duration-300`} /></div><div className="p-4"><p className="text-xs text-slate-500 mb-2">{item.text}</p><h3 className="text-base md:text-lg text-slate-800 font-semibold">{item.name} <span aria-hidden="true">↗</span></h3></div></Link>)}</div></section>
+  return <section className="collection-section" aria-labelledby="collections-title">
+    <div className="collection-heading"><div><p>Encontre o próximo presente</p><h2 id="collections-title">Uma ideia para cada ocasião.</h2></div><Link to="/catalogo">Explorar catálogo →</Link></div>
+    <div className="collection-mosaic">{collections.map(item => <Link key={item.search} to={`/catalogo?busca=${encodeURIComponent(item.search)}`} className={`collection-tile ${item.shape}`}>
+      <div className="collection-caption"><p>{item.text}</p><h3>{item.name}</h3><span className="collection-button">Confira <span aria-hidden="true">→</span></span></div>
+      <img src={`/categorias/${item.image}.webp`} alt={item.name} loading="lazy" decoding="async" width="600" height="700" />
+    </Link>)}</div>
+  </section>
 }

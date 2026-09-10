@@ -40,25 +40,20 @@ function CardProduto({ produto }) {
 }
 
 function CardCategoria({ cat }) {
-  const icones = {
-    Canetas: "✏️",
-    "Squeezes e Garrafas": "🍶",
-    "Malas Mochilas Bolsas": "👜",
-    Chaveiros: "🔑",
-    Copos: "☕",
-    "Blocos e Cadernetas": "📓",
-    Nécessaires: "💼",
-    "Bolsas Térmicas": "🧊",
-    "Linha Ecológica": "🌿",
+  const fotos = {
+    'Sacolas e Sacochilas': 'sacolas', 'Squeezes e Garrafas': 'garrafas',
+    'Malas Mochilas Bolsas': 'mochilas', Canetas: 'canetas', Copos: 'copos',
+    'Blocos e Cadernetas': 'cadernetas', Nécessaires: 'necessaires',
+    'Bolsas Térmicas': 'bolsas-termicas', 'Linha Ecológica': 'sacolas',
   };
-  const icone = icones[cat.categoria] || "🎁";
+  const foto = fotos[cat.categoria];
   return (
     <Link
       to={`/catalogo?categoria=${encodeURIComponent(cat.categoria)}`}
       className="bg-white rounded-xl p-4 text-center shadow-sm hover:shadow-md border border-gray-100 hover:border-sky-200 transition-all group"
     >
-      <div className="w-12 h-12 bg-sky-50 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-sky-100 transition-colors">
-        <span className="text-2xl">{icone}</span>
+      <div className="h-32 sm:h-40 bg-slate-50 rounded-xl flex items-center justify-center mx-auto mb-4 p-3">
+        <img src={foto ? `/categorias/${foto}.webp` : "/imagem-indisponivel.svg"} alt={cat.categoria} width="200" height="200" loading="lazy" decoding="async" className="w-full h-full object-contain motion-safe:group-hover:scale-105 transition-transform" />
       </div>
       <p className="text-xs font-medium text-gray-700 leading-tight">
         {cat.categoria}
@@ -178,7 +173,7 @@ function Home() {
             Ver todas →
           </Link>
         </div>
-        <div className="grid grid-cols-3 md:grid-cols-6 lg:grid-cols-9 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
           {categorias.map((cat) => (
             <CardCategoria key={cat.categoria} cat={cat} />
           ))}
