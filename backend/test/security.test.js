@@ -44,3 +44,12 @@ test('login limita tentativas repetidas', async () => {
   for (let i = 0; i < 11; i++) response = await fetch(`${base}/api/auth/login`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email: 'test@example.invalid', senha: 'incorrect' }) })
   assert.equal(response.status, 429)
 })
+
+test('imagens públicas permitem incorporação entre domínios sem liberar a API', async () => {
+  const image = await fetch(`${base}/imagens/produto.jpg`, { redirect: 'manual' })
+  assert.equal(image.status, 302)
+  assert.equal(image.headers.get('cross-origin-resource-policy'), 'cross-origin')
+  assert.equal(image.headers.get('x-content-type-options'), 'nosniff')
+  const api = await fetch(`${base}/health`)
+  assert.equal(api.headers.get('cross-origin-resource-policy'), 'same-origin')
+})

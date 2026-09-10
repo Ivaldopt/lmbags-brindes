@@ -1,4 +1,4 @@
-require('dotenv').config()
+﻿require('dotenv').config()
 require('./config/security')
 const helmet = require('helmet')
 const { rateLimit } = require('express-rate-limit')
@@ -25,6 +25,8 @@ require('./config/database')
 
 // Servir imagens locais — extrai o nome do arquivo da URL original
 app.get('/imagens/:filename', (req, res) => {
+  // Imagens públicas são incorporadas pelo frontend em outro domínio.
+  res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin')
   const filename = req.params.filename
   if (!/^[a-zA-Z0-9_-]+(?:\.(?:jpg|jpeg|png|webp))?$/i.test(filename)) return res.status(400).json({ erro: 'Imagem inválida' })
   const publicId = filename.replace(/\.(jpg|jpeg|png)$/i, '')
@@ -83,3 +85,4 @@ app.use((err, req, res, next) => {
 
 if (require.main === module) app.listen(PORT, () => console.log('API iniciada'))
 module.exports = app
+
