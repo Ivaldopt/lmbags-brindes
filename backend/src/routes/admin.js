@@ -4,19 +4,24 @@ const pool = require('../config/database')
 const autenticar = require('../middlewares/auth')
 const cloudinary = require('cloudinary').v2
 const multer = require('multer')
+const { pagination, imageSignature } = require('../middlewares/validation')
 
 cloudinary.config({
-  cloud_name: 'zfkjqogg',
-  api_key: '761551516374698',
-  api_secret: 'jd49sTqhB_EdfJTQoS9RmHmBvGA'
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
 })
 
-const upload = multer({ storage: multer.memoryStorage() })
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024, files: 1, fields: 0 }, fileFilter: (req, file, cb) => {
+  if (['image/jpeg', 'image/png', 'image/webp'].includes(file.mimetype)) return cb(null, true)
+  const error = new Error('Formato de imagem inválido'); error.status = 400; cb(error)
+} })
 
 // ✅ ROTA PÚBLICA — registrar visita (sem autenticação)
 router.post('/visitas', async (req, res) => {
   const { tipo, referencia } = req.body
-  const ip = req.headers['x-forwarded-for']?.split(',')[0] || req.socket.remoteAddress
+  if (!['home', 'produto'].includes(tipo) || (referencia != null && (typeof referencia !== 'string' || referencia.length > 80))) return res.status(400).json({ erro: 'Visita inválida' })
+  const ip = req.ip
 
   try {
     const jaVisitou = await pool.query(
@@ -46,12 +51,27 @@ router.post('/visitas', async (req, res) => {
     )
     res.json({ sucesso: true })
   } catch (err) {
-    res.status(500).json({ erro: err.message })
+    res.status(500).json({ erro: 'Não foi possível concluir a operação.' })
   }
 })
 
 // ✅ Todas as rotas abaixo precisam de autenticação
 router.use(autenticar)
+
+router.param('id', (req, res, next, id) => {
+  if (!/^[1-9]\d*$/.test(id) || !Number.isSafeInteger(Number(id))) return res.status(400).json({ erro: 'Identificador inválido' })
+  next()
+})
+
+router.get('/produtos/:id', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM produtos WHERE id = $1', [req.params.id])
+    if (!result.rows.length) return res.status(404).json({ erro: 'Produto não encontrado' })
+    res.json(result.rows[0])
+  } catch {
+    res.status(500).json({ erro: 'Não foi possível carregar o produto.' })
+  }
+})
 
 // GET /api/admin/stats
 router.get('/stats', async (req, res) => {
@@ -79,12 +99,12 @@ router.get('/stats', async (req, res) => {
       topProdutos: topProdutos.rows,
     })
   } catch (err) {
-    res.status(500).json({ erro: err.message })
+    res.status(500).json({ erro: 'Não foi possível concluir a operação.' })
   }
 })
 
 // GET /api/admin/produtos
-router.get('/produtos', async (req, res) => {
+router.get('/produtos', pagination, async (req, res) => {
   try {
     const { busca, pagina = 1, limite = 20 } = req.query
     const offset = (pagina - 1) * limite
@@ -112,7 +132,7 @@ router.get('/produtos', async (req, res) => {
       totalPaginas: Math.ceil(total.rows[0].count / limite)
     })
   } catch (err) {
-    res.status(500).json({ erro: err.message })
+    res.status(500).json({ erro: 'Não foi possível concluir a operação.' })
   }
 })
 
@@ -126,7 +146,7 @@ router.put('/produtos/:id', async (req, res) => {
     )
     res.json({ sucesso: true })
   } catch (err) {
-    res.status(500).json({ erro: err.message })
+    res.status(500).json({ erro: 'Não foi possível concluir a operação.' })
   }
 })
 
@@ -141,7 +161,7 @@ router.post('/produtos', async (req, res) => {
     )
     res.json(result.rows[0])
   } catch (err) {
-    res.status(500).json({ erro: err.message })
+    res.status(500).json({ erro: 'Não foi possível concluir a operação.' })
   }
 })
 
@@ -151,12 +171,13 @@ router.delete('/produtos/:id', async (req, res) => {
     await pool.query('DELETE FROM produtos WHERE id = $1', [req.params.id])
     res.json({ sucesso: true })
   } catch (err) {
-    res.status(500).json({ erro: err.message })
+    res.status(500).json({ erro: 'Não foi possível concluir a operação.' })
   }
 })
 
 // POST /api/admin/upload
 router.post('/upload', upload.single('imagem'), async (req, res) => {
+  if (!req.file || !imageSignature(req.file.buffer)) return res.status(400).json({ erro: 'Envie uma imagem JPEG, PNG ou WebP válida.' })
   try {
     const resultado = await new Promise((resolve, reject) => {
       cloudinary.uploader.upload_stream(
@@ -169,7 +190,7 @@ router.post('/upload', upload.single('imagem'), async (req, res) => {
     })
     res.json({ url: resultado.secure_url })
   } catch (err) {
-    res.status(500).json({ erro: err.message })
+    res.status(500).json({ erro: 'Não foi possível concluir a operação.' })
   }
 })
 
@@ -182,7 +203,7 @@ router.get('/produtos/:id/imagens', async (req, res) => {
     )
     res.json(result.rows)
   } catch (err) {
-    res.status(500).json({ erro: err.message })
+    res.status(500).json({ erro: 'Não foi possível concluir a operação.' })
   }
 })
 
@@ -201,7 +222,7 @@ router.post('/produtos/:id/imagens', async (req, res) => {
     )
     res.json(result.rows[0])
   } catch (err) {
-    res.status(500).json({ erro: err.message })
+    res.status(500).json({ erro: 'Não foi possível concluir a operação.' })
   }
 })
 
@@ -211,7 +232,7 @@ router.delete('/imagens/:id', async (req, res) => {
     await pool.query('DELETE FROM produto_imagens WHERE id = $1', [req.params.id])
     res.json({ sucesso: true })
   } catch (err) {
-    res.status(500).json({ erro: err.message })
+    res.status(500).json({ erro: 'Não foi possível concluir a operação.' })
   }
 })
 
@@ -223,7 +244,7 @@ router.get('/avaliacoes', async (req, res) => {
     )
     res.json(result.rows)
   } catch (err) {
-    res.status(500).json({ erro: err.message })
+    res.status(500).json({ erro: 'Não foi possível concluir a operação.' })
   }
 })
 
@@ -238,7 +259,7 @@ router.post('/avaliacoes', async (req, res) => {
     )
     res.json(result.rows[0])
   } catch (err) {
-    res.status(500).json({ erro: err.message })
+    res.status(500).json({ erro: 'Não foi possível concluir a operação.' })
   }
 })
 
@@ -252,7 +273,7 @@ router.put('/avaliacoes/:id', async (req, res) => {
     )
     res.json({ sucesso: true })
   } catch (err) {
-    res.status(500).json({ erro: err.message })
+    res.status(500).json({ erro: 'Não foi possível concluir a operação.' })
   }
 })
 
@@ -262,7 +283,7 @@ router.delete('/avaliacoes/:id', async (req, res) => {
     await pool.query('DELETE FROM avaliacoes WHERE id = $1', [req.params.id])
     res.json({ sucesso: true })
   } catch (err) {
-    res.status(500).json({ erro: err.message })
+    res.status(500).json({ erro: 'Não foi possível concluir a operação.' })
   }
 })
 

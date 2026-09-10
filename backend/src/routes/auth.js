@@ -4,11 +4,13 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const pool = require('../config/database')
 
-const JWT_SECRET = process.env.JWT_SECRET || 'lmbags_secret_2026'
+const { jwtSecret: JWT_SECRET } = require('../config/security')
 
 // POST /api/auth/login
 router.post('/login', async (req, res) => {
   const { email, senha } = req.body
+
+  if (typeof email !== 'string' || email.length > 254 || typeof senha !== 'string' || !senha || Buffer.byteLength(senha) > 72) return res.status(400).json({ erro: 'Credenciais inválidas' })
 
   try {
     const result = await pool.query(
@@ -21,7 +23,7 @@ router.post('/login', async (req, res) => {
     }
 
     const admin = result.rows[0]
-    const senhaCorreta = bcrypt.compareSync(senha, admin.senha)
+    const senhaCorreta = await bcrypt.compare(senha, admin.senha)
 
     if (!senhaCorreta) {
       return res.status(401).json({ erro: 'Email ou senha incorretos' })
@@ -30,12 +32,12 @@ router.post('/login', async (req, res) => {
     const token = jwt.sign(
       { id: admin.id, email: admin.email },
       JWT_SECRET,
-      { expiresIn: '24h' }
+      { expiresIn: '2h', algorithm: 'HS256', issuer: 'lmbags-api', audience: 'lmbags-admin' }
     )
 
     res.json({ token, email: admin.email })
   } catch (err) {
-    res.status(500).json({ erro: err.message })
+    res.status(500).json({ erro: 'Não foi possível concluir a operação.' })
   }
 })
 

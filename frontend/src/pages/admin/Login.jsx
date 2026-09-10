@@ -1,9 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../../context/AuthContext'
-import axios from 'axios'
+import { useAuth } from '../../context/auth'
+import axios, { API } from '../../lib/api'
 
-const API = `${import.meta.env.VITE_API_URL || 'http://localhost:3001'}`
 
 function Login() {
   const [email, setEmail] = useState('')
@@ -21,7 +20,7 @@ function Login() {
       const res = await axios.post(`${API}/api/auth/login`, { email, senha })
       login(res.data.token, res.data.email)
       navigate('/admin')
-    } catch (err) {
+    } catch {
       setErro('Email ou senha incorretos')
     } finally {
       setLoading(false)

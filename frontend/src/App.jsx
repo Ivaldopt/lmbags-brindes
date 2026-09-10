@@ -1,5 +1,9 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
-import { useAuth } from './context/AuthContext'
+import CookieConsent from './components/CookieConsent'
+import LegalPage from './pages/LegalPage'
+import OutubroRosa from './pages/OutubroRosa'
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { useAuth } from './context/auth'
+import Seo from './components/Seo'
 import Header from './components/Header'
 import Footer from './components/Footer'
 import Home from './pages/Home'
@@ -20,13 +24,15 @@ function RotaProtegida({ children }) {
 }
 
 function App() {
-  const { autenticado } = useAuth()
-  const isAdmin = window.location.pathname.startsWith('/admin')
+  const { pathname } = useLocation()
+  const isAdmin = pathname.startsWith('/admin')
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
+      <Seo />
+      <a href="#conteudo" className="sr-only focus:not-sr-only">Pular para o conteúdo</a>
       {!isAdmin && <Header />}
-      <main className="flex-1">
+      <main id="conteudo" className="flex-1">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/catalogo" element={<Catalogo />} />
@@ -38,10 +44,14 @@ function App() {
           <Route path="/admin/produtos/novo" element={<RotaProtegida><NovoProduto /></RotaProtegida>} />
           <Route path="/admin/produtos/editar/:id" element={<RotaProtegida><EditarProduto /></RotaProtegida>} />
           <Route path="/admin/avaliacoes" element={<RotaProtegida><Avaliacoes /></RotaProtegida>} />
+          <Route path="/outubro-rosa" element={<OutubroRosa />} />
+          <Route path="/:page" element={<LegalPage />} />
+          <Route path="*" element={<div className="p-12 text-center"><h1>Página não encontrada</h1><a href="/catalogo">Visitar o catálogo</a></div>} />
         </Routes>
       </main>
       {!isAdmin && <WhatsappWidget />}
       {!isAdmin && <Footer />}
+      {!isAdmin && <CookieConsent />}
     </div>
   )
 }

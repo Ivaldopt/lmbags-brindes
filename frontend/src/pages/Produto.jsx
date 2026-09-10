@@ -1,11 +1,12 @@
+import useVisit from '../lib/useVisit'
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import axios from "axios";
+import axios, { API } from '../lib/api'
 
-const API = `${import.meta.env.VITE_API_URL || "http://localhost:3001"}`;
 
-function Produto() {
+function ProdutoContent() {
   const { codigo } = useParams();
+  useVisit('produto', codigo)
   const [produto, setProduto] = useState(null);
   const [relacionados, setRelacionados] = useState([]);
   const [imagens, setImagens] = useState([]);
@@ -13,10 +14,14 @@ function Produto() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setLoading(true);
-    setImgAtiva(0);
-    setProduto(null);
-    setImagens([]);
+    if (!produto) return
+    const title = `${produto.nome} | LM Bags & Brindes`
+    document.title = title
+    document.querySelector('meta[property="og:title"]')?.setAttribute('content', title)
+    document.querySelector('meta[name="description"]')?.setAttribute('content', `${produto.nome}. ${produto.descricao || 'Consulte opções de personalização e solicite um orçamento.'}`.slice(0, 160))
+  }, [produto]);
+
+  useEffect(() => {
 
     axios
       .get(`${API}/api/produtos/${codigo}`)
@@ -39,22 +44,6 @@ function Produto() {
       })
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, [codigo]);
-
-  // Registrar visita ao produto por dia
-  useEffect(() => {
-    if (codigo) {
-      const chave = `visitou_produto_${codigo}`;
-      if (!sessionStorage.getItem(chave)) {
-        axios
-          .post(`${API}/api/admin/visitas`, {
-            tipo: "produto",
-            referencia: codigo,
-          })
-          .catch(() => {});
-        sessionStorage.setItem(chave, "1");
-      }
-    }
   }, [codigo]);
 
   if (loading)
@@ -297,4 +286,7 @@ function Produto() {
   );
 }
 
-export default Produto;
+export default function Produto() {
+  const { codigo } = useParams()
+  return <ProdutoContent key={codigo} />
+}

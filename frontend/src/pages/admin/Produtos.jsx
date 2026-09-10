@@ -1,9 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useAuth } from '../../context/AuthContext'
-import axios from 'axios'
+import { useAuth } from '../../context/auth'
+import axios, { API } from '../../lib/api'
 
-const API = `${import.meta.env.VITE_API_URL || 'http://localhost:3001'}`
 
 function Produtos() {
   const { token, logout } = useAuth()
@@ -15,11 +14,8 @@ function Produtos() {
   const [busca, setBusca] = useState('')
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    carregar()
-  }, [pagina])
 
-  async function carregar() {
+  const carregar = useCallback(async () => {
     setLoading(true)
     try {
       const params = new URLSearchParams({ pagina, limite: 20 })
@@ -35,7 +31,17 @@ function Produtos() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [pagina, busca, token, logout, navigate])
+
+  useEffect(() => {
+    const controller = new AbortController()
+    const params = new URLSearchParams({ pagina, limite: 20, busca })
+    axios.get(`${API}/api/admin/produtos?${params}`, { signal: controller.signal, headers: { Authorization: `Bearer ${token}` } })
+      .then(res => { setProdutos(res.data.produtos); setTotal(res.data.total); setTotalPaginas(res.data.totalPaginas) })
+      .catch(err => { if (err.response?.status === 401) { logout(); navigate('/admin/login') } })
+      .finally(() => { if (!controller.signal.aborted) setLoading(false) })
+    return () => controller.abort()
+  }, [pagina, busca, token, logout, navigate])
 
   async function deletar(id, nome) {
     if (!confirm(`Deletar "${nome}"?`)) return
@@ -44,7 +50,7 @@ function Produtos() {
         headers: { Authorization: `Bearer ${token}` }
       })
       carregar()
-    } catch (err) {
+    } catch {
       alert('Erro ao deletar produto')
     }
   }

@@ -1,9 +1,10 @@
 const express = require('express')
 const router = express.Router()
 const pool = require('../config/database')
+const { pagination } = require('../middlewares/validation')
 
 // GET /api/produtos — lista todos com paginação e filtros
-router.get('/', async (req, res) => {
+router.get('/', pagination, async (req, res) => {
   try {
     const { categoria, busca, pagina = 1, limite = 20 } = req.query
     const offset = (pagina - 1) * limite
@@ -43,7 +44,7 @@ router.get('/', async (req, res) => {
       totalPaginas: Math.ceil(total / limite)
     })
   } catch (err) {
-    res.status(500).json({ erro: err.message })
+    res.status(500).json({ erro: 'Não foi possível concluir a operação.' })
   }
 })
 
@@ -58,7 +59,7 @@ router.get('/categorias', async (req, res) => {
     )
     res.json(result.rows)
   } catch (err) {
-    res.status(500).json({ erro: err.message })
+    res.status(500).json({ erro: 'Não foi possível concluir a operação.' })
   }
 })
 
@@ -74,7 +75,7 @@ router.get('/:codigo', async (req, res) => {
     }
     res.json(result.rows[0])
   } catch (err) {
-    res.status(500).json({ erro: err.message })
+    res.status(500).json({ erro: 'Não foi possível concluir a operação.' })
   }
 })
 
@@ -112,7 +113,7 @@ router.get('/:codigo/imagens', async (req, res) => {
     const nomeArquivo = produto.imagem.split('/').pop().replace(/\.[^/.]+$/, '')
     res.json([`https://res.cloudinary.com/zfkjqogg/image/upload/lmbags/${nomeArquivo}`])
   } catch (err) {
-    res.status(500).json({ erro: err.message })
+    res.status(500).json({ erro: 'Não foi possível concluir a operação.' })
   }
 })
 // GET /api/produtos/:codigo/variacoes — busca produtos com nome similar
@@ -134,7 +135,7 @@ router.get('/:codigo/variacoes', async (req, res) => {
     )
     res.json(result.rows)
   } catch (err) {
-    res.status(500).json({ erro: err.message })
+    res.status(500).json({ erro: 'Não foi possível concluir a operação.' })
   }
 })
 
@@ -146,7 +147,7 @@ router.get('/avaliacoes', async (req, res) => {
     )
     res.json(result.rows)
   } catch (err) {
-    res.status(500).json({ erro: err.message })
+    res.status(500).json({ erro: 'Não foi possível concluir a operação.' })
   }
 })
 

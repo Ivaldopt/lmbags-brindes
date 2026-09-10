@@ -4,11 +4,11 @@ const isProduction = process.env.NODE_ENV === 'production'
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: isProduction ? { rejectUnauthorized: false } : false,
+  ssl: isProduction ? { rejectUnauthorized: true, ...(process.env.DATABASE_CA ? { ca: process.env.DATABASE_CA.replace(/\\n/g, '\n') } : {}) } : false,
   host: isProduction ? undefined : '127.0.0.1',
   port: isProduction ? undefined : 5432,
   user: isProduction ? undefined : 'admin',
-  password: isProduction ? undefined : 'admin',
+  password: isProduction ? undefined : process.env.PGPASSWORD,
   database: isProduction ? undefined : 'lmbags',
 })
 

@@ -1,9 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useAuth } from '../../context/AuthContext'
-import axios from 'axios'
+import { useAuth } from '../../context/auth'
+import axios, { API } from '../../lib/api'
 
-const API = `${import.meta.env.VITE_API_URL || 'http://localhost:3001'}`
 
 function Avaliacoes() {
   const { token, logout } = useAuth()
@@ -16,9 +15,8 @@ function Avaliacoes() {
   const [editando, setEditando] = useState(null)
   const [salvando, setSalvando] = useState(false)
 
-  useEffect(() => { carregar() }, [])
 
-  async function carregar() {
+  const carregar = useCallback(async () => {
     try {
       const res = await axios.get(`${API}/api/admin/avaliacoes`, {
         headers: { Authorization: `Bearer ${token}` }
@@ -29,7 +27,16 @@ function Avaliacoes() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [token, logout, navigate])
+
+  useEffect(() => {
+    const controller = new AbortController()
+    axios.get(`${API}/api/admin/avaliacoes`, { signal: controller.signal, headers: { Authorization: `Bearer ${token}` } })
+      .then(res => setAvaliacoes(res.data))
+      .catch(err => { if (err.response?.status === 401) { logout(); navigate('/admin/login') } })
+      .finally(() => { if (!controller.signal.aborted) setLoading(false) })
+    return () => controller.abort()
+  }, [token, logout, navigate])
 
   async function salvar(e) {
     e.preventDefault()
@@ -47,7 +54,7 @@ function Avaliacoes() {
       setForm({ nome: '', nota: 5, comentario: '', foto_url: '', data_avaliacao: '' })
       setEditando(null)
       carregar()
-    } catch (err) {
+    } catch {
       alert('Erro ao salvar avaliação')
     } finally {
       setSalvando(false)
@@ -61,7 +68,7 @@ function Avaliacoes() {
         headers: { Authorization: `Bearer ${token}` }
       })
       carregar()
-    } catch (err) {
+    } catch {
       alert('Erro ao deletar')
     }
   }
@@ -72,7 +79,7 @@ function Avaliacoes() {
         headers: { Authorization: `Bearer ${token}` }
       })
       carregar()
-    } catch (err) {
+    } catch {
       alert('Erro ao atualizar')
     }
   }

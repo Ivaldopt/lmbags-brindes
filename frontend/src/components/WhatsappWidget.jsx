@@ -18,7 +18,7 @@ export default function WhatsappWidget() {
   return (
     <>
       {aberto && (
-        <div className="fixed bottom-24 right-6 w-[340px] rounded-3xl overflow-hidden shadow-2xl z-50 animate-in fade-in zoom-in duration-300">
+        <div className="fixed bottom-24 right-6 w-[min(340px,calc(100vw-32px))] rounded-3xl overflow-hidden shadow-2xl z-50 animate-in fade-in zoom-in duration-300">
           {/* Header */}
 
           <div className="bg-[#25D366] px-5 py-4 flex justify-between">
@@ -39,7 +39,7 @@ export default function WhatsappWidget() {
             </div>
 
             <button
-              onClick={() => setAberto(false)}
+              aria-label="Fechar conversa" onClick={() => setAberto(false)}
               className="text-white text-2xl"
             >
               ×
@@ -93,7 +93,7 @@ export default function WhatsappWidget() {
       {/* Botão Flutuante */}
 
       <button
-        onClick={() => setAberto(!aberto)}
+        aria-label="Abrir atendimento pelo WhatsApp" onClick={() => setAberto(!aberto)}
         className="
         fixed
         bottom-6

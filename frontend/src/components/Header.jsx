@@ -1,66 +1,22 @@
-import { Link, useNavigate } from 'react-router-dom'
+import { NavLink, Link, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
+import { business } from '../lib/business'
 
-function Header() {
+export default function Header() {
   const [busca, setBusca] = useState('')
   const navigate = useNavigate()
-
-  function handleBusca(e) {
-    e.preventDefault()
-    if (busca.trim()) {
-      navigate(`/catalogo?busca=${busca}`)
-    }
-  }
-
-  return (
-    <header className="w-full">
-      {/* Topo — logo + busca */}
-      <div className="bg-white border-b border-gray-200 py-3 px-6 flex items-center justify-between">
-        {/* Logo */}
-        <Link to="/" className="flex items-center">
-          <img src="/Logo LM BAGS E BRINDES ATUALIZADO.png" alt="LM Bags e Brindes" className="h-14 w-auto object-contain" />
-        </Link>
-
-        {/* Busca */}
-        <form onSubmit={handleBusca} className="flex items-center gap-2 w-full max-w-md mx-8">
-          <input
-            type="text"
-            placeholder="Buscar produtos..."
-            value={busca}
-            onChange={e => setBusca(e.target.value)}
-            className="w-full border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
-          />
-          <button
-            type="submit"
-            className="bg-sky-500 hover:bg-sky-600 text-white rounded-full px-4 py-2 text-sm transition-colors"
-          >
-            Buscar
-          </button>
-        </form>
-
-        {/* Info */}
-        <div className="text-right text-xs text-gray-400 hidden lg:block">
-          <p>Atendemos somente empresas</p>
-          <p>especializadas na revenda de brindes</p>
-        </div>
-      </div>
-
-      {/* Menu de navegação */}
-      <nav className="text-white text-sm font-medium" style={{backgroundColor: '#0A2139'}}>
-        <div className="max-w-7xl mx-auto px-6 flex items-center gap-1">
-          <Link to="/" className="px-4 py-3 hover:bg-sky-600 transition-colors">
-            HOME
-          </Link>
-          <Link to="/catalogo" className="px-4 py-3 hover:bg-sky-900 transition-colors">
-            PRODUTOS
-          </Link>
-          <Link to="/quem-somos" className="px-4 py-3 hover:bg-sky-900 transition-colors">
-            QUEM SOMOS
-          </Link>
-        </div>
-      </nav>
-    </header>
-  )
+  function search(event) { event.preventDefault(); if (busca.trim()) navigate(`/catalogo?busca=${encodeURIComponent(busca.trim())}`) }
+  const navStyle = ({ isActive }) => `px-3 sm:px-5 py-3.5 text-xs sm:text-sm whitespace-nowrap border-b-2 transition-colors ${isActive ? 'border-sky-400 text-white bg-white/5' : 'border-transparent text-slate-200 hover:text-white hover:bg-white/5'}`
+  return <header className="w-full bg-white">
+    <div className="bg-[#081d31] text-slate-200 px-5 py-2.5 text-xs"><div className="max-w-7xl mx-auto flex justify-between gap-4"><p>Personalização para empresas e ocasiões especiais</p><Link to="/atendimento-e-reclamacoes" className="hidden sm:inline underline underline-offset-4">Central de atendimento</Link></div></div>
+    <div className="max-w-7xl mx-auto px-5 py-5 flex flex-wrap md:flex-nowrap items-center gap-5 md:gap-10">
+      <Link to="/" className="shrink-0"><img src="/Logo LM BAGS E BRINDES ATUALIZADO.png" alt="LM Bags e Brindes — início" className="h-16 md:h-20 w-auto object-contain" /></Link>
+      <form role="search" onSubmit={search} className="order-3 md:order-none w-full md:flex-1 flex items-center rounded-lg border border-slate-300 overflow-hidden bg-slate-50 focus-within:ring-2 focus-within:ring-sky-700">
+        <input type="search" aria-label="Buscar produtos" placeholder="O que você procura para sua marca?" maxLength={200} value={busca} onChange={e => setBusca(e.target.value)} className="min-w-0 flex-1 bg-transparent px-4 py-3 text-sm outline-none" />
+        <button type="submit" className="bg-[#0a435e] text-white px-5 self-stretch text-sm hover:bg-sky-800">Buscar</button>
+      </form>
+      <a href={`https://wa.me/${business.whatsapp}`} target="_blank" rel="noopener noreferrer" className="ml-auto text-sm text-[#0a435e] border border-slate-200 rounded-lg px-4 py-3 hover:bg-slate-50"><span className="hidden lg:block text-xs text-slate-500 mb-1">Vamos tirar sua ideia do papel?</span>Solicitar orçamento ↗</a>
+    </div>
+    <nav aria-label="Navegação principal" className="bg-[#0a2139]"><div className="max-w-7xl mx-auto px-2 sm:px-5 flex flex-wrap"><NavLink to="/" end className={navStyle}>Início</NavLink><NavLink to="/catalogo" className={navStyle}>Produtos</NavLink><NavLink to="/quem-somos" className={navStyle}>Quem somos</NavLink><NavLink to="/atendimento-e-reclamacoes" className={navStyle}>Atendimento</NavLink></div></nav>
+  </header>
 }
-
-export default Header

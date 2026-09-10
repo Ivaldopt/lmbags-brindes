@@ -1,19 +1,20 @@
+require('dotenv').config()
 const cloudinary = require('cloudinary').v2
 const fs = require('fs')
 const path = require('path')
 const { Pool } = require('pg')
 
 cloudinary.config({
-  cloud_name: 'zfkjqogg',
-  api_key: '761551516374698',
-  api_secret: 'jd49sTqhB_EdfJTQoS9RmHmBvGA'
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
 })
 
 const pool = new Pool({
   host: '127.0.0.1',
   port: 5432,
   user: 'admin',
-  password: 'admin',
+  password: process.env.PGPASSWORD,
   database: 'lmbags',
 })
 

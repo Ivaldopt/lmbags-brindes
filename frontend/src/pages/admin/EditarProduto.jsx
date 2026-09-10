@@ -1,9 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
-import { useAuth } from '../../context/AuthContext'
-import axios from 'axios'
+import { useAuth } from '../../context/auth'
+import axios, { API } from '../../lib/api'
 
-const API = `${import.meta.env.VITE_API_URL || 'http://localhost:3001'}`
 
 function EditarProduto() {
   const { id } = useParams()
@@ -19,13 +18,22 @@ function EditarProduto() {
     medidas: '', peso: '', imagem: '', categoria: ''
   })
 
+  const carregarImagens = useCallback(async () => {
+    try {
+      const res = await axios.get(`${API}/api/admin/produtos/${id}/imagens`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      setImagens(res.data)
+    } catch (err) {
+      console.error(err)
+    }
+  }, [id, token])
+
   useEffect(() => {
-    fetch(`${API}/api/admin/produtos?pagina=1&limite=2000`, {
+    axios.get(`${API}/api/admin/produtos/${id}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
-      .then(r => r.json())
-      .then(data => {
-        const produto = data.produtos.find(p => p.id === parseInt(id))
+      .then(({ data: produto }) => {
         if (produto) {
           setForm({
             nome: produto.nome || '',
@@ -42,19 +50,11 @@ function EditarProduto() {
       })
       .catch(() => setLoading(false))
 
-    carregarImagens()
-  }, [id])
-
-  async function carregarImagens() {
-    try {
-      const res = await axios.get(`${API}/api/admin/produtos/${id}/imagens`, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-      setImagens(res.data)
-    } catch (err) {
-      console.error(err)
-    }
-  }
+    const controller = new AbortController()
+    axios.get(`${API}/api/admin/produtos/${id}/imagens`, { signal: controller.signal, headers: { Authorization: `Bearer ${token}` } })
+      .then(res => setImagens(res.data)).catch(() => {})
+    return () => controller.abort()
+  }, [id, token])
 
   async function handleUpload(e) {
     const file = e.target.files[0]
@@ -71,7 +71,7 @@ function EditarProduto() {
         headers: { Authorization: `Bearer ${token}` }
       })
       carregarImagens()
-    } catch (err) {
+    } catch {
       alert('Erro ao fazer upload')
     } finally {
       setUploading(false)
@@ -86,7 +86,7 @@ function EditarProduto() {
         headers: { Authorization: `Bearer ${token}` }
       })
       carregarImagens()
-    } catch (err) {
+    } catch {
       alert('Erro ao deletar imagem')
     }
   }
@@ -100,7 +100,7 @@ function EditarProduto() {
       })
       setSucesso(true)
       setTimeout(() => navigate('/admin/produtos'), 1500)
-    } catch (err) {
+    } catch {
       alert('Erro ao salvar produto')
     } finally {
       setSalvando(false)

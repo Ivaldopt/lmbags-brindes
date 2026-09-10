@@ -1,3 +1,4 @@
+require('dotenv').config()
 const { Pool } = require('pg')
 const fs = require('fs')
 const { parse } = require('csv-parse/sync')
@@ -6,7 +7,7 @@ const pool = new Pool({
   host: '127.0.0.1',
   port: 5432,
   user: 'admin',
-  password: 'admin',
+  password: process.env.PGPASSWORD,
   database: 'lmbags',
 })
 

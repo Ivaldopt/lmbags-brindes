@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useAuth } from '../../context/AuthContext'
-import axios from 'axios'
+import { useAuth } from '../../context/auth'
+import axios, { API } from '../../lib/api'
 
-const API = `${import.meta.env.VITE_API_URL || 'http://localhost:3001'}`
 
 function Dashboard() {
   const { token, email, logout } = useAuth()
@@ -18,7 +17,7 @@ function Dashboard() {
       setStats(r.data)
       setTopProdutos(r.data.topProdutos || [])
     }).catch(console.error)
-  }, [])
+  }, [token])
 
   function handleLogout() {
     logout()

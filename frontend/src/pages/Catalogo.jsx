@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import axios from 'axios'
+import axios, { API } from '../lib/api'
 
-const API = `${import.meta.env.VITE_API_URL || 'http://localhost:3001'}`
 
 function CardProduto({ produto }) {
   const src = `${API}/imagens/${produto.imagem ? produto.imagem.split('/').pop() : ''}`
@@ -10,9 +9,9 @@ function CardProduto({ produto }) {
     <Link to={`/catalogo/${produto.codigo}`}
       className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all group border border-gray-100">
       <div className="bg-gray-50 p-4 h-44 flex items-center justify-center">
-        <img src={src} alt={produto.nome}
+        <img loading="lazy" decoding="async" width="240" height="240" src={src} alt={produto.nome}
           className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform"
-          onError={e => { e.target.src = 'https://placehold.co/200x200?text=Sem+foto' }} />
+          onError={e => { e.target.src = '/imagem-indisponivel.svg' }} />
       </div>
       <div className="p-3 text-center">
         <p className="text-xs text-gray-400 font-mono">{String(produto.codigo).padStart(5, '0')}</p>
@@ -22,13 +21,14 @@ function CardProduto({ produto }) {
   )
 }
 
-function Catalogo() {
+function CatalogoContent() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [produtos, setProdutos] = useState([])
   const [categorias, setCategorias] = useState([])
   const [total, setTotal] = useState(0)
   const [totalPaginas, setTotalPaginas] = useState(0)
   const [loading, setLoading] = useState(true)
+  const [erro, setErro] = useState(false)
 
   const categoriaAtual = searchParams.get('categoria') || ''
   const buscaAtual = searchParams.get('busca') || ''
@@ -41,7 +41,6 @@ function Catalogo() {
   }, [])
 
   useEffect(() => {
-    setLoading(true)
     const params = new URLSearchParams()
     if (categoriaAtual) params.set('categoria', categoriaAtual)
     if (buscaAtual) params.set('busca', buscaAtual)
@@ -54,7 +53,7 @@ function Catalogo() {
         setTotal(r.data.total)
         setTotalPaginas(r.data.totalPaginas)
       })
-      .catch(console.error)
+      .catch(() => setErro(true))
       .finally(() => setLoading(false))
   }, [categoriaAtual, buscaAtual, paginaAtual])
 
@@ -72,11 +71,11 @@ function Catalogo() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-8 flex gap-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex flex-col md:flex-row gap-8">
       {/* Sidebar categorias */}
-      <aside className="w-56 flex-shrink-0">
+      <aside className="w-full md:w-56 flex-shrink-0">
         <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wider mb-4">Categorias</h3>
-        <ul className="space-y-1">
+        <ul className="space-y-1 max-h-52 md:max-h-none overflow-y-auto">
           <li>
             <button onClick={() => mudarCategoria('')}
               className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${!categoriaAtual ? 'bg-sky-500 text-white font-medium' : 'text-gray-600 hover:bg-gray-100'}`}>
@@ -97,7 +96,7 @@ function Catalogo() {
       </aside>
 
       {/* Conteúdo principal */}
-      <div className="flex-1">
+      <div className="flex-1 min-w-0">
         {/* Cabeçalho */}
         <div className="flex items-center justify-between mb-6">
           <div>
@@ -119,6 +118,8 @@ function Catalogo() {
           <div className="flex items-center justify-center h-64">
             <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-sky-500"></div>
           </div>
+        ) : erro ? (
+          <p role="alert" className="py-12 text-gray-600">Não foi possível carregar os produtos. Atualize a página ou tente novamente em instantes.</p>
         ) : produtos.length === 0 ? (
           <div className="text-center py-16 text-gray-400">
             <p className="text-4xl mb-4">🔍</p>
@@ -131,7 +132,7 @@ function Catalogo() {
             </div>
 
             {/* Paginação */}
-            <div className="flex items-center justify-center gap-2 mt-10">
+            <div className="flex flex-wrap items-center justify-center gap-2 mt-10">
               <button onClick={() => mudarPagina(paginaAtual - 1)}
                 disabled={paginaAtual === 1}
                 className="px-4 py-2 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
@@ -160,4 +161,7 @@ function Catalogo() {
   )
 }
 
-export default Catalogo
+export default function Catalogo() {
+  const [params] = useSearchParams()
+  return <CatalogoContent key={params.toString()} />
+}

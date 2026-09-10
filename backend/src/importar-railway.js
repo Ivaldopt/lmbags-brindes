@@ -1,10 +1,11 @@
+require('dotenv').config()
 const { Pool } = require('pg')
 const fs = require('fs')
 const { parse } = require('csv-parse/sync')
 
 const pool = new Pool({
-  connectionString: 'postgresql://postgres:FGYNXUwoXXCFzWTvzgRZgEzmhgewZguk@caboose.proxy.rlwy.net:57882/railway',
-  ssl: { rejectUnauthorized: false }
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: true }
 })
 
 async function importar() {

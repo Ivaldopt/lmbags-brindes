@@ -1,9 +1,8 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { useAuth } from '../../context/AuthContext'
-import axios from 'axios'
+import { useAuth } from '../../context/auth'
+import axios, { API } from '../../lib/api'
 
-const API = `${import.meta.env.VITE_API_URL || 'http://localhost:3001'}`
 
 function NovoProduto() {
   const { token } = useAuth()
@@ -29,7 +28,7 @@ function NovoProduto() {
         }
       })
       setForm(prev => ({ ...prev, imagem: res.data.url }))
-    } catch (err) {
+    } catch {
       alert('Erro ao fazer upload da imagem')
     } finally {
       setUploading(false)
