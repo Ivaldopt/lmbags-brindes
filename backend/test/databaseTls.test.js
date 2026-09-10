@@ -1,0 +1,16 @@
+﻿const { test } = require('node:test')
+const assert = require('node:assert/strict')
+const config = require('../src/config/databaseTls')
+const env = { NODE_ENV: 'production', DATABASE_CA: 'private-ca', DATABASE_URL: 'postgres://test:unused@postgres.railway.internal/db' }
+const cert = name => ({ subjectaltname: `DNS:${name}`, subject: { CN: name } })
+test('TLS mantém validação de CA e aceita identidade legada somente no serviço privado', () => {
+ const ssl=config(env)
+ assert.equal(ssl.rejectUnauthorized,true)
+ assert.equal(ssl.ca,'private-ca')
+ assert.equal(ssl.checkServerIdentity('postgres.railway.internal',cert('localhost')),undefined)
+ assert.equal(ssl.checkServerIdentity('postgres.railway.internal',cert('postgres.railway.internal')),undefined)
+ assert.ok(ssl.checkServerIdentity('postgres.railway.internal',cert('outro.example')))
+ assert.ok(ssl.checkServerIdentity('outro.example',cert('localhost')))
+ assert.equal(config({...env,DATABASE_CA:''}).checkServerIdentity,undefined)
+ assert.equal(config({...env,DATABASE_URL:'postgres://test:unused@public.example/db'}).checkServerIdentity,undefined)
+})

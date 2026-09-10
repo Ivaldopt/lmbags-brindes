@@ -1,10 +1,10 @@
-const { Pool } = require('pg')
+﻿const { Pool } = require('pg')
 
 const isProduction = process.env.NODE_ENV === 'production'
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: isProduction ? { rejectUnauthorized: true, ...(process.env.DATABASE_CA ? { ca: process.env.DATABASE_CA.replace(/\\n/g, '\n') } : {}) } : false,
+  ssl: require('./databaseTls')(process.env),
   host: isProduction ? undefined : '127.0.0.1',
   port: isProduction ? undefined : 5432,
   user: isProduction ? undefined : 'admin',
