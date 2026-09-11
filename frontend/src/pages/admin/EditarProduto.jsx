@@ -1,3 +1,4 @@
+import { validateUpload, uploadError } from '../../lib/upload'
 import { useCallback, useEffect, useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../../context/auth'
@@ -11,6 +12,7 @@ function EditarProduto() {
   const [loading, setLoading] = useState(true)
   const [salvando, setSalvando] = useState(false)
   const [uploading, setUploading] = useState(false)
+  const [erroUpload, setErroUpload] = useState('')
   const [sucesso, setSucesso] = useState(false)
   const [imagens, setImagens] = useState([])
   const [form, setForm] = useState({
@@ -58,21 +60,25 @@ function EditarProduto() {
 
   async function handleUpload(e) {
     const file = e.target.files[0]
-    if (!file) return
+    if (!file || uploading) return
+    setErroUpload('')
+    const invalid = validateUpload(file)
+    if (invalid) { setErroUpload(invalid); e.target.value = ''; return }
     setUploading(true)
     try {
       const formData = new FormData()
       formData.append('imagem', file)
       const res = await axios.post(`${API}/api/admin/upload`, formData, {
-        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' }
+        timeout: 60000,
+        headers: { Authorization: `Bearer ${token}` }
       })
       // Adiciona imagem à tabela produto_imagens
       await axios.post(`${API}/api/admin/produtos/${id}/imagens`, { url: res.data.url }, {
         headers: { Authorization: `Bearer ${token}` }
       })
       carregarImagens()
-    } catch {
-      alert('Erro ao fazer upload')
+    } catch (error) {
+      setErroUpload(uploadError(error))
     } finally {
       setUploading(false)
       e.target.value = ''
@@ -157,7 +163,7 @@ function EditarProduto() {
                   <div key={img.id} className="relative group">
                     <img src={img.url} alt="extra"
                       className="w-24 h-24 object-contain bg-gray-50 rounded-lg p-2 border border-gray-200"
-                      onError={e => { e.target.src = 'https://placehold.co/96x96?text=?' }} />
+                      onError={e => { e.target.src = '/imagem-indisponivel.svg' }} />
                     <button onClick={() => deletarImagem(img.id)}
                       className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                       ✕
@@ -168,11 +174,13 @@ function EditarProduto() {
             </div>
           )}
 
+          <p className="text-xs text-gray-500 mb-2">JPEG, PNG ou WebP, até 5 MB.</p>
+          {erroUpload && <p role="alert" className="mb-3 rounded-lg bg-red-50 p-3 text-sm text-red-700">{erroUpload}</p>}
           {/* Upload nova imagem */}
           <div>
             <p className="text-xs text-gray-400 mb-2">Adicionar imagem</p>
             <div className="flex gap-3 items-center">
-              <input type="file" accept="image/*" onChange={handleUpload}
+              <input type="file" accept="image/jpeg,image/png,image/webp" disabled={uploading} onChange={handleUpload}
                 className="flex-1 border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-sky-500" />
               {uploading && <span className="text-sm text-gray-400 animate-pulse">Enviando...</span>}
             </div>

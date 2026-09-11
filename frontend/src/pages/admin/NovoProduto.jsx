@@ -1,3 +1,4 @@
+import { validateUpload, uploadError } from '../../lib/upload'
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../../context/auth'
@@ -13,25 +14,28 @@ function NovoProduto() {
     largura: '', medidas: '', peso: '', imagem: '', categoria: ''
   })
   const [uploading, setUploading] = useState(false)
+  const [erroUpload, setErroUpload] = useState('')
 
   async function handleUpload(e) {
     const file = e.target.files[0]
-    if (!file) return
+    if (!file || uploading) return
+    setErroUpload('')
+    const invalid = validateUpload(file)
+    if (invalid) { setErroUpload(invalid); e.target.value = ''; return }
     setUploading(true)
     try {
       const formData = new FormData()
       formData.append('imagem', file)
       const res = await axios.post(`${API}/api/admin/upload`, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data'
-        }
+        timeout: 60000,
+        headers: { Authorization: `Bearer ${token}` }
       })
       setForm(prev => ({ ...prev, imagem: res.data.url }))
-    } catch {
-      alert('Erro ao fazer upload da imagem')
+    } catch (error) {
+      setErroUpload(uploadError(error))
     } finally {
       setUploading(false)
+      e.target.value = ''
     }
   }
 
@@ -65,6 +69,7 @@ function NovoProduto() {
       </div>
 
       <div className="max-w-3xl mx-auto px-6 py-8">
+        {erroUpload && <p role="alert" className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{erroUpload}</p>}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
 
           {srcPreview && (
@@ -139,7 +144,7 @@ function NovoProduto() {
             <div>
               <label className="text-sm font-medium text-gray-700 block mb-1">Imagem</label>
               <div className="flex gap-3 items-center">
-                <input type="file" accept="image/*" onChange={handleUpload}
+                <input type="file" accept="image/jpeg,image/png,image/webp" disabled={uploading} onChange={handleUpload}
                   className="flex-1 border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-sky-500" />
                 {uploading && <span className="text-sm text-gray-400">Enviando...</span>}
               </div>

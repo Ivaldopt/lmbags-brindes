@@ -53,3 +53,17 @@ test('imagens públicas permitem incorporação entre domínios sem liberar a AP
   const api = await fetch(`${base}/health`)
   assert.equal(api.headers.get('cross-origin-resource-policy'), 'same-origin')
 })
+
+test('upload informa configuração ausente sem expor credenciais', async () => {
+  const keys=['CLOUDINARY_CLOUD_NAME','CLOUDINARY_API_KEY','CLOUDINARY_API_SECRET']
+  const saved=keys.map(key=>process.env[key])
+  keys.forEach(key=>delete process.env[key])
+  try {
+    const token=jwt.sign({id:1,email:'test@example.invalid'},process.env.JWT_SECRET,{issuer:'lmbags-api',audience:'lmbags-admin'})
+    const form=new FormData()
+    form.append('imagem',new Blob([Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Wl6kZAAAAAASUVORK5CYII=','base64')],{type:'image/png'}),'teste.png')
+    const response=await fetch(`${base}/api/admin/upload`,{method:'POST',headers:{authorization:`Bearer ${token}`},body:form})
+    assert.equal(response.status,503)
+    assert.match((await response.json()).erro,/Upload não configurado/)
+  } finally { keys.forEach((key,i)=>{ if(saved[i]===undefined)delete process.env[key];else process.env[key]=saved[i] }) }
+})

@@ -144,10 +144,15 @@ router.delete('/produtos/:id', async (req, res) => {
 // POST /api/admin/upload
 router.post('/upload', upload.single('imagem'), async (req, res) => {
   if (!req.file || !imageSignature(req.file.buffer)) return res.status(400).json({ erro: 'Envie uma imagem JPEG, PNG ou WebP válida.' })
+  const missing = ['CLOUDINARY_CLOUD_NAME', 'CLOUDINARY_API_KEY', 'CLOUDINARY_API_SECRET'].filter(key => !process.env[key]?.trim())
+  if (missing.length) {
+    console.error('Upload indisponível: variáveis ausentes:', missing.join(', '))
+    return res.status(503).json({ erro: 'Upload não configurado no servidor. Configure CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY e CLOUDINARY_API_SECRET no serviço backend do Railway.' })
+  }
   try {
     const resultado = await new Promise((resolve, reject) => {
       cloudinary.uploader.upload_stream(
-        { folder: 'lmbags' },
+        { folder: 'lmbags', resource_type: 'image', timeout: 50000 },
         (error, result) => {
           if (error) reject(error)
           else resolve(result)
@@ -156,7 +161,11 @@ router.post('/upload', upload.single('imagem'), async (req, res) => {
     })
     res.json({ url: resultado.secure_url })
   } catch (err) {
-    res.status(500).json({ erro: 'Não foi possível concluir a operação.' })
+    const status = Number(err.http_code) || 0
+    console.error('Falha no serviço de upload. HTTP:', status)
+    res.status(502).json({ erro: [401, 403].includes(status)
+      ? 'O serviço de imagens recusou as credenciais. Confira as chaves do Cloudinary no Railway.'
+      : 'O serviço de imagens não concluiu o envio. Tente novamente; se persistir, confira os logs do Railway.' })
   }
 })
 
