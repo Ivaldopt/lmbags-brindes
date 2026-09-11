@@ -10,10 +10,13 @@ Na pasta backend, gerar primeiro o relatório:
 
 O arquivo galerias-relatorio.json lista os grupos candidatos, ambiguidades e produtos sem padrão reconhecido. Não publicar esse relatório na pasta public. Conferir amostras visualmente e especialmente modelos parecidos antes de aplicar:
 
-    node scripts/sync-gallery.js --apply
+    node scripts/sync-gallery.js --apply --reviewed=scripts/galerias-revisadas.json
 
 O comando de aplicação consulta novamente os dados e grava apenas grupos com um único produto e imagem principal presente. Só remove sufixos conhecidos de cor e o par ID/timestamp; capacidades e modelos permanecem no nome. Nomes iguais não comprovam, sozinhos, que duas fotos pertencem ao mesmo produto. Grupos ambíguos não são associados. O script não altera a imagem principal nem remove imagens adicionais e pode ser repetido sem adicionar novamente a mesma URL. Falhas na gravação desfazem a transação inteira.
 
 A listagem é paginada (500 imagens por chamada) e ocorre apenas na execução do script, nunca durante a visita de um cliente ao site. A API Admin do Cloudinary possui limites: https://cloudinary.com/documentation/admin_api
 
 As associações reais ainda não foram executadas: credenciais do Cloudinary pendentes de configuração pelo proprietário. Testes usam nomes fictícios; não significam revisão das 18 mil imagens.
+
+Revisão visual de 11/09/2026: os candidatos 18111 (suporte) e 14810 (carregador) eram modelos diferentes; não aplicar nomes automaticamente. A lista scripts/galerias-revisadas.json contém somente as três fotos de power banks comparadas com as principais (5036, 6004 e 5089). O comando --apply agora exige lista explícita e verifica novamente se cada URL ainda pertence ao candidato. Credenciais já configuradas no Railway; execução da associação ainda pendente.
+
