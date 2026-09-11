@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const pool = require('../config/database')
+const analytics = require('../services/analytics')(pool)
 const autenticar = require('../middlewares/auth')
 const cloudinary = require('cloudinary').v2
 const multer = require('multer')
@@ -19,38 +20,15 @@ const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 *
 
 // ✅ ROTA PÚBLICA — registrar visita (sem autenticação)
 router.post('/visitas', async (req, res) => {
-  const { tipo, referencia } = req.body
+  const { tipo, referencia, visitante } = req.body
   if (!['home', 'produto'].includes(tipo) || (referencia != null && (typeof referencia !== 'string' || referencia.length > 80))) return res.status(400).json({ erro: 'Visita inválida' })
-  const ip = req.ip
-
+  // Clientes anteriores não devem contaminar a nova contagem com IPs de proxy.
+  if (visitante == null) return res.json({ sucesso: true, ignorado: true })
+  if (typeof visitante !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(visitante)) return res.status(400).json({ erro: 'Visitante inválido' })
   try {
-    const jaVisitou = await pool.query(
-      `SELECT id FROM visitas WHERE ip = $1 AND created_at >= CURRENT_DATE`,
-      [ip]
-    )
-
-    if (jaVisitou.rows.length > 0) {
-      if (tipo === 'produto' && referencia) {
-        const jaVistoProduto = await pool.query(
-          `SELECT id FROM visitas WHERE ip = $1 AND tipo = 'produto' AND referencia = $2 AND created_at >= CURRENT_DATE`,
-          [ip, referencia]
-        )
-        if (jaVistoProduto.rows.length === 0) {
-          await pool.query(
-            'INSERT INTO visitas (tipo, referencia, ip) VALUES ($1, $2, $3)',
-            [tipo, referencia, ip]
-          )
-        }
-      }
-      return res.json({ sucesso: true, duplicado: true })
-    }
-
-    await pool.query(
-      'INSERT INTO visitas (tipo, referencia, ip) VALUES ($1, $2, $3)',
-      [tipo, referencia || null, ip]
-    )
+    await analytics.record(visitante, tipo, referencia || '')
     res.json({ sucesso: true })
-  } catch (err) {
+  } catch {
     res.status(500).json({ erro: 'Não foi possível concluir a operação.' })
   }
 })
@@ -76,27 +54,15 @@ router.get('/produtos/:id', async (req, res) => {
 // GET /api/admin/stats
 router.get('/stats', async (req, res) => {
   try {
-    const [totalProdutos, totalCategorias, visitasHoje, visitasMes, topProdutos] = await Promise.all([
+    const [totalProdutos, totalCategorias, visits] = await Promise.all([
       pool.query('SELECT COUNT(*) FROM produtos'),
       pool.query('SELECT COUNT(DISTINCT categoria) FROM produtos'),
-      pool.query('SELECT COUNT(DISTINCT ip) FROM visitas WHERE created_at >= CURRENT_DATE'),
-      pool.query("SELECT COUNT(DISTINCT ip) FROM visitas WHERE created_at >= NOW() - INTERVAL '30 days'"),
-      pool.query(`
-        SELECT referencia, COUNT(*) as total 
-        FROM visitas 
-        WHERE tipo = 'produto' AND referencia IS NOT NULL
-        GROUP BY referencia 
-        ORDER BY total DESC 
-        LIMIT 5
-      `),
+      analytics.stats(),
     ])
-
     res.json({
       totalProdutos: parseInt(totalProdutos.rows[0].count),
       totalCategorias: parseInt(totalCategorias.rows[0].count),
-      visitasHoje: parseInt(visitasHoje.rows[0].count),
-      visitasMes: parseInt(visitasMes.rows[0].count),
-      topProdutos: topProdutos.rows,
+      ...visits,
     })
   } catch (err) {
     res.status(500).json({ erro: 'Não foi possível concluir a operação.' })

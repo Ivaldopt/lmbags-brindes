@@ -44,6 +44,7 @@ function Dashboard() {
       <div className="max-w-6xl mx-auto px-6 py-8">
         <h1 className="text-2xl font-semibold text-gray-800 mb-8">Dashboard</h1>
 
+        <p className="text-sm text-gray-500 mb-6">Cada navegador conta uma vez no período, mesmo ao abrir vários produtos. Contagem com consentimento; seus acessos enquanto conectado como administrador são excluídos. Os números começam na nova medição e não representam pessoas online agora.</p>
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
           <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
@@ -56,11 +57,11 @@ function Dashboard() {
           </div>
           <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
             <p className="text-3xl font-bold text-green-500">{stats?.visitasHoje ?? '...'}</p>
-            <p className="text-sm text-gray-500 mt-1">Visitas hoje</p>
+            <p className="text-sm text-gray-500 mt-1">Visitantes hoje</p>
           </div>
           <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
             <p className="text-3xl font-bold text-green-500">{stats?.visitasMes ?? '...'}</p>
-            <p className="text-sm text-gray-500 mt-1">Visitas este mês</p>
+            <p className="text-sm text-gray-500 mt-1">Visitantes este mês</p>
           </div>
         </div>
 
@@ -69,7 +70,7 @@ function Dashboard() {
           <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
             <h2 className="font-semibold text-gray-700 mb-4">🏆 Top 5 produtos mais acessados</h2>
             {topProdutos.length === 0 ? (
-              <p className="text-sm text-gray-400">Nenhuma visita registrada ainda.</p>
+              <p className="text-sm text-gray-400">Nenhum acesso registrado ainda.</p>
             ) : (
               <div className="space-y-3">
                 {topProdutos.map((p, i) => (
@@ -81,7 +82,7 @@ function Dashboard() {
                         Produto #{p.referencia}
                       </Link>
                     </div>
-                    <span className="text-sm font-bold text-gray-700">{p.total} visitas</span>
+                    <span className="text-sm font-bold text-gray-700">{p.total} acessos</span>
                   </div>
                 ))}
               </div>

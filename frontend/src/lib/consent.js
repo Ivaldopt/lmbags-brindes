@@ -1,3 +1,4 @@
+﻿import { clearVisitorId } from './visitor.js'
 import { useSyncExternalStore } from 'react'
 
 const KEY = 'lmbags_privacidade_v1'
@@ -16,6 +17,7 @@ if (typeof window !== 'undefined') window.addEventListener('storage', event => {
   if (event.key === KEY || event.key === null) { current = read(); emit() }
 })
 export function saveConsent(choices) {
+  if (choices.statistics !== true) clearVisitorId()
   current = { decided: true, version: 1, statistics: choices.statistics === true, external: choices.external === true, savedAt: Date.now() }
   try { localStorage.setItem(KEY, JSON.stringify(current)) } catch { /* Escolha válida nesta sessão. */ }
   emit()
@@ -25,3 +27,4 @@ export function getConsent() { return current }
 export function useConsent() {
   return useSyncExternalStore(fn => { listeners.add(fn); return () => listeners.delete(fn) }, getConsent, () => empty)
 }
+
