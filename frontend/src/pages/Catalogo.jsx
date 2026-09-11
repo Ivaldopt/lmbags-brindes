@@ -6,7 +6,7 @@ import axios, { API } from '../lib/api'
 function CardProduto({ produto }) {
   const src = `${API}/imagens/${produto.imagem ? produto.imagem.split('/').pop() : ''}`
   return (
-    <Link to={`/catalogo/${produto.codigo}`}
+    <Link data-reveal to={`/catalogo/${produto.codigo}`}
       className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all group border border-gray-100">
       <div className="bg-gray-50 p-4 h-44 flex items-center justify-center">
         <img loading="lazy" decoding="async" width="240" height="240" src={src} alt={produto.nome}

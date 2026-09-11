@@ -127,7 +127,7 @@ function ProdutoContent() {
                 alt={produto.nome}
                 className="max-h-full max-w-full object-contain"
                 onError={(e) => {
-                  e.target.src = "https://placehold.co/480x480?text=Sem+foto";
+                  e.target.src = "/imagem-indisponivel.svg";
                 }}
               />
             </div>
@@ -135,16 +135,18 @@ function ProdutoContent() {
               <div className="flex gap-2 justify-center flex-wrap">
                 {imagens.map((img, i) => (
                   <button
-                    key={i}
+                    key={img}
+                    aria-label={`Ver foto ${i + 1} de ${produto.nome}`}
+                    aria-pressed={imgAtiva === i}
                     onClick={() => setImgAtiva(i)}
                     className={`w-16 h-16 border-2 rounded overflow-hidden transition-all ${imgAtiva === i ? "border-sky-500" : "border-gray-200 hover:border-gray-400"}`}
                   >
                     <img
                       src={img}
-                      alt={i}
+                      alt={`${produto.nome} — foto ${i + 1}`} loading="lazy"
                       className="w-full h-full object-contain p-1"
                       onError={(e) => {
-                        e.target.src = "https://placehold.co/64x64";
+                        e.target.src = "/imagem-indisponivel.svg";
                       }}
                     />
                   </button>

@@ -13,7 +13,7 @@ const collections = [
 export default function CollectionCards() {
   return <section className="collection-section" aria-labelledby="collections-title">
     <div className="collection-heading"><div><p>Encontre o próximo presente</p><h2 id="collections-title">Uma ideia para cada ocasião.</h2></div><Link to="/catalogo">Explorar catálogo →</Link></div>
-    <div className="collection-mosaic">{collections.map(item => <Link key={item.search} to={`/catalogo?busca=${encodeURIComponent(item.search)}`} className={`collection-tile ${item.shape}`}>
+    <div className="collection-mosaic">{collections.map(item => <Link data-reveal key={item.search} to={`/catalogo?busca=${encodeURIComponent(item.search)}`} className={`collection-tile ${item.shape}`}>
       <div className="collection-caption"><p>{item.text}</p><h3>{item.name}</h3><span className="collection-button">Confira <span aria-hidden="true">→</span></span></div>
       <img src={`/categorias/${item.image}.webp`} alt={item.name} loading="lazy" decoding="async" width="600" height="700" />
     </Link>)}</div>

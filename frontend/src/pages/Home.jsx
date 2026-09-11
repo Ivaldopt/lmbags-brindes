@@ -12,7 +12,7 @@ function CardProduto({ produto }) {
   const nomeArquivo = produto.imagem ? produto.imagem.split("/").pop() : "";
   const src = `${API}/imagens/${nomeArquivo}`;
   return (
-    <Link
+    <Link data-reveal
       to={`/catalogo/${produto.codigo}`}
       className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all group border border-gray-100"
     >
@@ -48,7 +48,7 @@ function CardCategoria({ cat }) {
   };
   const foto = fotos[cat.categoria];
   return (
-    <Link
+    <Link data-reveal
       to={`/catalogo?categoria=${encodeURIComponent(cat.categoria)}`}
       className="bg-white rounded-xl p-4 text-center shadow-sm hover:shadow-md border border-gray-100 hover:border-sky-200 transition-all group"
     >
