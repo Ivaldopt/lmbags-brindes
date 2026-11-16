@@ -2,35 +2,42 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import './HeroCarousel.css'
 
+// Catálogo LM: chamadas editoriais sem especificações técnicas não verificadas.
 const slides = [
   {
-    name: 'Sacolas e Ecobags', theme: 'nature',
-    eyebrow: 'SACOLAS & ECOBAGS', title: 'Sua marca em todos os lugares.',
-    text: 'Soluções personalizadas para eventos, empresas e ações promocionais.',
-    image: '/categorias/sacolas.webp', alt: 'Sacolas promocionais da LM Bags & Brindes',
-    detailImage: '/banners/ecobags.webp', detailAlt: 'Ecobags do catálogo',
-    href: '/catalogo?busca=Sacola', quote: 'sacolas e ecobags',
+    name: 'Mochilas e Bolsas',
+    label: 'Coleção corporativa',
+    title: ['Mochilas e bolsas', 'para acompanhar', 'sua marca.'],
+    description: 'Praticidade, estilo e presença para a rotina dos seus clientes.',
+    features: ['Para equipes e eventos', 'Personalização sob consulta'],
+    background: '/banners/mochilas.webp',
+    main: '/categorias/mochilas.webp',
+    secondary: '/categorias/bolsas-termicas.webp',
+    search: 'Mochila',
   },
   {
-    name: 'Garrafas e Copos', theme: 'sky',
-    eyebrow: 'GARRAFAS & COPOS', title: 'Brindes que fazem parte da rotina.',
-    text: 'Produtos úteis e marcantes para divulgar a sua empresa todos os dias.',
-    image: '/categorias/garrafas.webp', alt: 'Garrafas personalizáveis do catálogo',
-    detailImage: '/categorias/copos.webp', detailAlt: 'Copos promocionais do catálogo',
-    href: '/catalogo?busca=Garrafa', quote: 'garrafas e copos',
+    name: 'Garrafas e Copos',
+    label: 'Brindes para o dia a dia',
+    title: ['Garrafas e copos', 'que fazem sua', 'marca circular.'],
+    description: 'Produtos de uso frequente para ações e presentes corporativos.',
+    features: ['Diversas opções', 'Sua marca em destaque'],
+    background: '/banners/garrafas.webp',
+    main: '/categorias/garrafas.webp',
+    secondary: '/categorias/copos.webp',
+    search: 'Garrafa',
   },
   {
-    name: 'Mochilas e Bolsas', theme: 'sand',
-    eyebrow: 'MOCHILAS & BOLSAS', title: 'Leve sua marca mais longe.',
-    text: 'Praticidade e visibilidade para equipes, clientes e eventos.',
-    image: '/categorias/mochilas.webp', alt: 'Mochilas promocionais do catálogo',
-    detailImage: '/categorias/bolsas-termicas.webp', detailAlt: 'Bolsas térmicas do catálogo',
-    href: '/catalogo?busca=Mochila', quote: 'mochilas e bolsas',
+    name: 'Sacolas e Ecobags',
+    label: 'Presença em movimento',
+    title: ['Sacolas e ecobags', 'para levar sua', 'marca mais longe.'],
+    description: 'Uma escolha versátil para eventos, lojas e campanhas.',
+    features: ['Uso no dia a dia', 'Modelos personalizáveis'],
+    background: '/banners/ecobags.webp',
+    main: '/categorias/sacolas.webp',
+    secondary: '/banners/sacola-lona.webp',
+    search: 'Sacola',
   },
 ]
-
-const quoteUrl = category =>
-  `https://wa.me/557199124780?text=${encodeURIComponent(`Olá! Gostaria de solicitar um orçamento de ${category} personalizados pela LM Bags & Brindes.`)}`
 
 export default function HeroCarousel() {
   const [active, setActive] = useState(0)
@@ -50,61 +57,76 @@ export default function HeroCarousel() {
     if (!rotating) return
     const timer = setInterval(() => {
       if (!document.hidden) setActive(i => (i + 1) % slides.length)
-    }, 6000)
+    }, 6500)
     return () => clearInterval(timer)
   }, [rotating])
 
   return (
-    <section className="hero-carousel hero-showcase" aria-label="Destaques do catálogo" aria-roledescription="carrossel"
+    <section
+      className="lm-hero"
+      aria-label="Produtos em destaque"
+      aria-roledescription="carrossel"
       onFocusCapture={() => setFocused(true)}
-      onBlurCapture={event => { if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false) }}>
-      <h1 className="sr-only">Brindes personalizados para empresas — LM Bags &amp; Brindes</h1>
+      onBlurCapture={event => { if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false) }}
+    >
+      <h1 className="sr-only">LM Bags &amp; Brindes — brindes personalizados para empresas</h1>
       <div aria-live={rotating ? 'off' : 'polite'}>
         {slides.map((slide, index) => (
-          <div key={slide.name} hidden={active !== index}
-            className={`hero-slide hero-showcase-${slide.theme}`} role="group"
-            aria-roledescription="slide" aria-label={`${index + 1} de ${slides.length}: ${slide.name}`}>
-            <div className="hero-inner">
-              <div className="hero-copy">
-                <p className="hero-eyebrow"><span className="hero-pulse" /> {slide.eyebrow}</p>
-                <h2>{slide.title}</h2>
-                <p className="hero-description">{slide.text}</p>
-                <div className="hero-actions">
-                  <Link className="hero-cta" to={slide.href}>EXPLORAR PRODUTOS <span aria-hidden="true">→</span></Link>
-                  <a className="hero-secondary" href={quoteUrl(slide.quote)}
-                    target="_blank" rel="noopener noreferrer">Solicitar orçamento</a>
+          <div
+            className="lm-hero-slide"
+            key={slide.name}
+            hidden={active !== index}
+            role="group"
+            aria-roledescription="slide"
+            aria-label={`${index + 1} de ${slides.length}: ${slide.name}`}
+          >
+            <div className="lm-hero-texture" aria-hidden="true" />
+            <div className="lm-hero-photo" aria-hidden="true">
+              <img
+                src={slide.background}
+                alt=""
+                width="1000"
+                height="650"
+                loading={index === 0 ? 'eager' : 'lazy'}
+                fetchPriority={index === 0 ? 'high' : undefined}
+              />
+            </div>
+            <div className="lm-hero-content">
+              <div className="lm-hero-copy">
+                <p className="lm-hero-label">{slide.label}</p>
+                <h2>{slide.title.map((line, lineIndex) =>
+                  <span key={lineIndex}>{line}</span>
+                )}</h2>
+                <p className="lm-hero-description">{slide.description}</p>
+                <div className="lm-hero-features">
+                  {slide.features.map((feature, featureIndex) => (
+                    <div key={feature} className="lm-hero-feature">
+                      <span className="lm-hero-feature-icon" aria-hidden="true">{featureIndex === 0 ? '✓' : '✦'}</span>
+                      <span>{feature}</span>
+                    </div>
+                  ))}
                 </div>
-              </div>
-              <div className="hero-showcase-visual">
-                <div className="hero-showcase-orbit" aria-hidden="true" />
-                <Link className="hero-showcase-main" to={slide.href} aria-label={`Explorar ${slide.name.toLowerCase()}`}>
-                  <img src={slide.image} alt={slide.alt} width="540" height="540"
-                    loading={index === 0 ? 'eager' : 'lazy'}
-                    fetchPriority={index === 0 ? 'high' : undefined} decoding="async" />
-                </Link>
-                <Link className="hero-showcase-mini" to={slide.href} aria-label={`Ver mais opções de ${slide.name.toLowerCase()}`}>
-                  <img src={slide.detailImage} alt={slide.detailAlt} width="220" height="220"
-                    loading="lazy" decoding="async" />
-                </Link>
-                <div className="hero-showcase-note">PERSONALIZE COM SUA MARCA <span aria-hidden="true">✳</span></div>
+                <div className="lm-hero-bottom">
+                  <div className="lm-hero-thumbs" aria-label="Exemplos da categoria">
+                    <div className="lm-hero-thumb"><img src={slide.main} alt={`Produto da categoria ${slide.name}`} width="120" height="120" loading="lazy" /></div>
+                    <div className="lm-hero-thumb"><img src={slide.secondary} alt={`Outra opção de ${slide.name}`} width="120" height="120" loading="lazy" /></div>
+                  </div>
+                  <Link className="lm-hero-cta" to={`/catalogo?busca=${encodeURIComponent(slide.search)}`}>Veja mais <span aria-hidden="true">→</span></Link>
+                </div>
               </div>
             </div>
           </div>
         ))}
       </div>
-      <button type="button" className="hero-prev" aria-label="Banner anterior"
-        onClick={() => setActive(i => (i - 1 + slides.length) % slides.length)}>‹</button>
-      <button type="button" className="hero-next" aria-label="Próximo banner"
-        onClick={() => setActive(i => (i + 1) % slides.length)}>›</button>
-      <div className="hero-controls">
-        <div className="hero-dots">{slides.map((slide, index) =>
-          <button key={slide.name} type="button" aria-label={`Mostrar banner de ${slide.name}`}
-            aria-current={index === active ? 'true' : undefined}
-            onClick={() => setActive(index)}><span /></button>
-        )}</div>
-        <button type="button" className="hero-pause"
-          aria-label={paused ? 'Retomar carrossel automático' : 'Pausar carrossel automático'}
-          onClick={() => setPaused(!paused)}>{paused ? '▷' : 'Ⅱ'}</button>
+      <button className="lm-hero-prev" type="button" aria-label="Banner anterior" onClick={() => setActive(i => (i + slides.length - 1) % slides.length)}>‹</button>
+      <button className="lm-hero-next" type="button" aria-label="Próximo banner" onClick={() => setActive(i => (i + 1) % slides.length)}>›</button>
+      <div className="lm-hero-controls">
+        {slides.map((slide, index) =>
+          <button key={slide.name} type="button" className={index === active ? 'is-active' : ''}
+            aria-label={`Exibir ${slide.name}`} aria-current={index === active ? 'true' : undefined}
+            onClick={() => setActive(index)} />
+        )}
+        <button type="button" className="lm-hero-pause" aria-label={paused ? 'Retomar rotação' : 'Pausar rotação'} onClick={() => setPaused(p => !p)}>{paused ? '▶' : 'Ⅱ'}</button>
       </div>
     </section>
   )
