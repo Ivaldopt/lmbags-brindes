@@ -24,3 +24,39 @@
 .pink-products .pink-product-4{left:36%;width:24%;height:40%;bottom:-2%;z-index:6;transform:rotate(-14deg)}
 .pink-products .pink-product-5{right:0;width:32%;height:56%;bottom:1%;z-index:3}
 @media(max-width:700px){.pink-products{height:260px;width:92%;right:4%;bottom:40px}.pink-message{top:-4px}.pink-message h2{font-size:17px}}
+
+
+/* Identidade visual dos três banners de referência (1600 × 600). */
+.hero-reference .hero-inner{max-width:none;width:100%;height:clamp(430px,37.5vw,600px);grid-template-columns:48% 52%;align-items:stretch}
+.hero-reference .hero-copy{padding:clamp(30px,3.3vw,54px) clamp(28px,5vw,80px);display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start}
+.hero-reference .hero-brand{display:flex;flex-direction:column;gap:20px;margin-bottom:clamp(30px,3.4vw,52px);font-size:clamp(17px,1.6vw,26px);font-weight:750;letter-spacing:.055em;line-height:1.3;white-space:nowrap;color:#fff}
+.hero-reference .hero-brand-line{width:60px;height:7px;border-radius:100px;background:#61b7d3}
+.hero-reference .hero-eyebrow{font-size:clamp(12px,1.24vw,20px);font-weight:700;letter-spacing:.025em;margin:0 0 22px;opacity:1;color:#60b5d2}
+.hero-reference .hero-copy h2{font-size:clamp(38px,4vw,67px);font-weight:780;line-height:1.18;letter-spacing:-.025em;margin:0;max-width:600px}
+.hero-reference .hero-description{font-size:clamp(15px,1.45vw,23px);line-height:1.4;max-width:560px;margin:30px 0 0;color:#e2e8eb}
+.hero-reference .hero-cta{margin-top:auto;margin-bottom:0;border-radius:9px;background:#62b7d3;color:#102433;font-size:clamp(13px,1.1vw,18px);font-weight:750;box-shadow:none;letter-spacing:.01em;padding:18px 25px;gap:0}
+.hero-reference .hero-cta:hover{background:#90d5e9}
+.hero-reference .hero-photo{width:100%;height:100%;padding:0;overflow:hidden;display:block}
+.hero-reference .hero-photo img,.hero-reference .hero-photo:hover img{width:100%;height:100%;display:block;object-fit:cover;object-position:center;mask-image:none;filter:none;transform:none;transition:none}
+.hero-reference .hero-bag{background:#102034;color:#fff}
+.hero-reference .hero-bottle{background:#20232b;color:#fff}
+.hero-reference .hero-bottle .hero-brand-line,.hero-reference .hero-bottle .hero-cta{background:#b7cbd4}
+.hero-reference .hero-bottle .hero-eyebrow{color:#b7cbd4}
+.hero-reference .hero-eco{background:#0d2926;color:#fff}
+.hero-reference .hero-eco .hero-brand-line,.hero-reference .hero-eco .hero-cta{background:#e0b879;color:#122926}
+.hero-reference .hero-eco .hero-eyebrow{color:#e0b879}
+.hero-reference .hero-eco .hero-description{color:#e2e8eb}
+.hero-reference .hero-prev,.hero-reference .hero-next{background:#0b203b77}
+@media(max-width:700px){
+  .hero-reference .hero-inner{grid-template-columns:1fr;grid-template-rows:auto minmax(220px,1fr);height:690px}
+  .hero-reference .hero-copy{padding:24px 34px 26px}
+  .hero-reference .hero-brand{margin-bottom:24px;font-size:17px;gap:11px}
+  .hero-reference .hero-brand-line{height:5px;width:44px}
+  .hero-reference .hero-eyebrow{font-size:12px;margin-bottom:10px}
+  .hero-reference .hero-copy h2{font-size:clamp(33px,8vw,46px);line-height:1.1;max-width:460px}
+  .hero-reference .hero-description{font-size:15px;margin:13px 0 20px}
+  .hero-reference .hero-cta{margin-top:0;font-size:13px;padding:13px 18px}
+  .hero-reference .hero-photo{min-height:260px}
+  .hero-reference .hero-photo img{object-fit:cover;object-position:center}
+  .hero-reference .hero-controls{bottom:10px}
+}
