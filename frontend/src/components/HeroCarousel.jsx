@@ -3,13 +3,9 @@ import { Link } from 'react-router-dom'
 import './HeroCarousel.css'
 
 const slides = [
-  { name: 'Outubro Rosa', theme: 'pink', title: 'Pequenos gestos. Grandes lembranças.', text: 'Brindes que espalham cuidado e conscientização.', href: '/outubro-rosa', cta: 'Conheça a seleção' },
-  { name: 'Ecobags', theme: 'eco', title: 'Sua marca vai junto.', text: 'Ecobags e sacolas para fazer parte de cada dia.', image: '/banners/sacola-lona.webp', alt: 'Sacola de lona natural com alças compridas', href: '/catalogo?busca=Sacola', cta: 'Confira' },
-  { name: 'Garrafas', theme: 'bottle', title: 'Presença em cada pausa.', text: 'Garrafas e squeezes para acompanhar todos os momentos.', image: '/banners/garrafas.webp', alt: 'Garrafas e copos térmicos coloridos do catálogo', href: '/catalogo?busca=Garrafa', cta: 'Confira' },
-  { name: 'Mochilas', theme: 'bag', title: 'Para levar boas ideias.', text: 'Mochilas e bolsas para o trabalho e para ir mais longe.', image: '/categorias/mochilas.webp', alt: 'Mochila bege e preta do catálogo', href: '/catalogo?busca=Mochila', cta: 'Confira' },
-  { name: 'Canetas', theme: 'pen', title: 'Grandes marcas deixam traços.', text: 'Canetas que colocam sua empresa nas mãos de quem importa.', image: '/banners/canetas.webp', alt: 'Canetas e acessórios de escrita do catálogo', href: '/catalogo?busca=Caneta', cta: 'Confira' },
+  { name: 'Sacolas e Ecobags', theme: 'eco', title: 'Sua marca vai mais longe.', text: 'Sacolas e ecobags personalizadas para sua empresa estar presente todos os dias.', image: '/banners/sacola-lona.webp', alt: 'Sacola de lona natural do catálogo', href: '/catalogo?busca=Sacola', cta: 'Ver sacolas e ecobags' },
+  { name: 'Mochilas e Bolsas', theme: 'bag', title: 'Sua marca em cada jornada.', text: 'Mochilas e bolsas personalizadas para equipes, eventos e negócios.', image: '/banners/mochilas.webp', alt: 'Mochilas do catálogo', href: '/catalogo?busca=Mochila', cta: 'Ver mochilas e bolsas' },
 ]
-
 export default function HeroCarousel() {
   const [active, setActive] = useState(0)
   const [paused, setPaused] = useState(false)
