@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { FiChevronLeft, FiChevronRight } from 'react-icons/fi'
 import './HeroCarousel.css'
 
 // Artes horizontais aprovadas: 2172 × 724 px, sem logomarca.
@@ -117,9 +118,9 @@ export default function HeroCarousel() {
         })}
       </div>
       <button type="button" className="lm-banner-prev" aria-label="Banner anterior"
-        onClick={() => setActive(i => (i + slides.length - 1) % slides.length)}>‹</button>
+        onClick={() => setActive(i => (i + slides.length - 1) % slides.length)}><FiChevronLeft aria-hidden="true" /></button>
       <button type="button" className="lm-banner-next" aria-label="Próximo banner"
-        onClick={() => setActive(i => (i + 1) % slides.length)}>›</button>
+        onClick={() => setActive(i => (i + 1) % slides.length)}><FiChevronRight aria-hidden="true" /></button>
       <div className="lm-banner-dots" aria-label="Selecionar banner">
         {slides.map((slide, index) => (
           <button
